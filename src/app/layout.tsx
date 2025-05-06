@@ -27,6 +27,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <img
+          src="external/global-map.png"
+          alt="global map"
+          className="w-screen h-screen object-cover object-top"
+        />
+
         {children}
       </body>
     </html>
