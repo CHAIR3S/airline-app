@@ -25,15 +25,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`
+          ${geistSans.variable} ${geistMono.variable} antialiased
+          relative min-h-screen
+        `}
       >
-        <img
-          src="external/global-map.png"
-          alt="global map"
-          className="w-screen h-screen object-cover object-top"
+        <div
+          className="absolute inset-0 bg-cover bg-top blur-[1px] z-0"
+          style={{
+            backgroundImage: "url('/external/map-blue.webp')",
+          }}
         />
 
-        {children}
+        {/* Contenido */}
+        <div className="relative z-10">
+          {children}
+        </div>
       </body>
     </html>
   );
