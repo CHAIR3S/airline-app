@@ -49,7 +49,7 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md shadow-lg border-0">
       <CardHeader className="space-y-2">
-        <CardTitle className="text-2xl font-bold text-center">Registro</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">Inicio de sesión</CardTitle>
         <CardDescription className="text-center">
           Odisea es una plataforma de uso gratis. Registre sus datos a continuación para comenzar.
         </CardDescription>
