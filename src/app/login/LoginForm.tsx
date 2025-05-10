@@ -49,7 +49,7 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md shadow-lg border-0">
       <CardHeader className="space-y-2">
-        <CardTitle className="text-2xl font-bold text-center">Inicio de sesión</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">Inicio de Sesion</CardTitle>
         <CardDescription className="text-center">
           Odisea es una plataforma de uso gratis. Registre sus datos a continuación para comenzar.
         </CardDescription>
@@ -62,9 +62,9 @@ export function LoginForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Correo Electrónico</FormLabel>
                   <FormControl>
-                    <Input placeholder="correo@ejemplo.com" {...field} />
+                    <Input placeholder="example@correo.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -77,7 +77,7 @@ export function LoginForm() {
                 <FormItem>
                   <FormLabel>Contraseña</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="********" {...field} />
+                    <Input type="password" placeholder="Usa mayúsculas, minúsculas y números" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
