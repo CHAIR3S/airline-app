@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,20 +26,34 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`
-          ${geistSans.variable} ${geistMono.variable} antialiased
-          relative min-h-screen
-        `}
       >
-        <div
-          className="absolute inset-0 bg-cover bg-top blur-[1px] z-0"
-          style={{
-            backgroundImage: "url('/external/map-blue.webp')",
-          }}
-        />
+        
+        
 
-        {/* Contenido */}
-        <div className="relative z-10">
+        {/* Header/Navigation */}
+        <header className="container mx-auto  py-4 flex justify-between items-center z-20 relative ">
+          <div className="text-2xl font-bold text-[#605DEC] ">Tripma</div>
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
+              Vuelos
+            </Link>
+            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
+              Ver mis vuelos
+            </Link>
+            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
+              Inicio de sesión
+            </Link>
+            <Link
+              href="#"
+              className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors"
+            >
+              Registro
+            </Link>
+          </nav>
+        </header>
+
+
+        <div >
           {children}
         </div>
       </body>
