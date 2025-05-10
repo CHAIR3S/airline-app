@@ -5,8 +5,8 @@ import { LoginForm } from "./LoginForm";
 
 export default function LoginPage() {
     return (
-        <div className="min-h-screen flex flex-col">
-          <header className="container mx-auto py-4 px-4 flex justify-end items-center">
+        <div className="max-h-screen min-h-[85vh] flex flex-col">
+          {/* <header className="container mx-auto py-4 px-4 flex justify-end items-center">
             <nav className="flex items-center gap-6">
               <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Ver vuelos
@@ -21,7 +21,7 @@ export default function LoginPage() {
                 Registrarse
               </Link>
             </nav>
-          </header>
+          </header> */}
     
           <main className="flex-1 flex items-center justify-center p-4">
             <LoginForm />
