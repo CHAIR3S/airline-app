@@ -47,21 +47,21 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-lg border-0">
-      <CardHeader className="space-y-2">
+    <Card className="rounded-2xl w-full max-w-md shadow-lg border-white ">
+      <CardHeader className="space-y-2 ">
         <CardTitle className="text-2xl font-bold text-center">Registro</CardTitle>
         <CardDescription className="text-center">
           Odisea es una plataforma de uso gratis. Registre sus datos a continuación para comenzar.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-[2vh]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="h">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="correo@ejemplo.com" {...field} />
@@ -70,7 +70,9 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
+            <div className="" />
             <FormField
+            
               control={form.control}
               name="password"
               render={({ field }) => (
@@ -83,7 +85,7 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="terms"
               render={({ field }) => (
@@ -102,8 +104,8 @@ export function LoginForm() {
                   </div>
                 </FormItem>
               )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            /> */}
+            <Button type="submit" className="w-full btn-primary rounded-2xl mt-1.5" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -119,7 +121,7 @@ export function LoginForm() {
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
           ¿Ya tienes una cuenta?{" "}
-          <Link href="#" className="text-primary hover:underline">
+          <Link href="#" className="text-secondary hover:underline">
             Iniciar sesión
           </Link>
         </p>

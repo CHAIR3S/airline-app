@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import Image from 'next/image';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,21 +32,24 @@ export default function RootLayout({
         
 
         {/* Header/Navigation */}
-        <header className="container mx-auto  py-4 flex justify-between items-center z-20 relative ">
-          <div className="text-2xl font-bold text-[#605DEC] ">Tripma</div>
+        <header className="w-[90vw]  mx-auto  py-4 flex justify-between items-center z-20   ">
+          <div className="text-4xl font-bold text-secondary ">
+            
+            <Image src={"/external/odisea-logo.png"} alt="odisea-logo" width={120} height={120} className="absolute top-[-2vh] left-0" />
+          </div>
           <nav className="hidden md:flex items-center space-x-6">
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
+            <Link href="#" className="text-gray-600 hover:text-[#605DEC] font-semibold">
               Vuelos
             </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
+            <Link href="#" className="text-gray-600 hover:text-[#605DEC] font-semibold">
               Ver mis vuelos
             </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
+            <Link href="#" className="text-gray-600 hover:text-[#605DEC] font-semibold">
               Inicio de sesión
             </Link>
             <Link
               href="#"
-              className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors"
+              className="btn-secondary text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors"
             >
               Registro
             </Link>
