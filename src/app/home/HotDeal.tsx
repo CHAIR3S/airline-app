@@ -3,7 +3,7 @@ import { Flame } from "lucide-react"
 
 export default function HotDeal() {
   return (
-    <section className="py-16 bg-gradient-to-r from-red-50 to-orange-50">
+    <section className="py-16 bg-gradient-to-r from-[var(--pink-200)] to-orange-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center mb-10">
           <Flame className="text-red-500 mr-2" size={24} />

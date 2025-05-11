@@ -51,7 +51,7 @@ export default function Home() {
         <section className="relative py-16 md:pb-[25vh] pt-[17vh]">
           <div className="absolute inset-0 -z-10 bg-[url('/placeholdser.svg?height=800&width=1600')] bg-cover bg-center opacity-10"></div>
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-12 bg-gradient-to-r from-[#4D89FF] to-[#7A6DFF] text-transparent bg-clip-text">
+            <h1 className="text-9xl md:text-6xl font-bold mb-12 text-gradient pb-2.5">
               It's more than just a trip
             </h1>
 
