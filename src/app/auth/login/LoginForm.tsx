@@ -47,14 +47,14 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-lg border-0">
-      <CardHeader className="space-y-2">
-        <CardTitle className="text-2xl font-bold text-center">Inicio de sesión</CardTitle>
+    <Card className="rounded-2xl w-full max-w-md shadow-lg border-white ">
+      <CardHeader className="space-y-2 ">
+        <CardTitle className="text-2xl font-bold text-center">Inicio de Sesión</CardTitle>
         <CardDescription className="text-center">
-          Odisea es una plataforma de uso gratis. Registre sus datos a continuación para comenzar.
+          Registre sus datos a continuación para comenzar.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-[2vh]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
@@ -62,28 +62,31 @@ export function LoginForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Correo Electrónico</FormLabel>
+
                   <FormControl>
-                    <Input placeholder="correo@ejemplo.com" {...field} />
+                    <Input placeholder="example@correo.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <div className="" />
             <FormField
+            
               control={form.control}
               name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Contraseña</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="********" {...field} />
+                    <Input type="password" placeholder="Usa mayúsculas, minúsculas y números" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="terms"
               render={({ field }) => (
@@ -102,8 +105,8 @@ export function LoginForm() {
                   </div>
                 </FormItem>
               )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            /> */}
+            <Button type="submit" className="w-full btn-primary rounded-2xl mt-1.5" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -118,9 +121,9 @@ export function LoginForm() {
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-muted-foreground">
-          ¿Ya tienes una cuenta?{" "}
-          <Link href="#" className="text-primary hover:underline">
-            Iniciar sesión
+          ¿Aún no tienes una cuenta?{" "}
+          <Link href="/auth/register" className="text-secondary hover:underline">
+            Registrarse
           </Link>
         </p>
       </CardFooter>

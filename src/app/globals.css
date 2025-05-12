@@ -112,6 +112,114 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+:root {
+  /* Colores principales */
+  --color-primary: #5C9588;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #C86193;
+  --color-secondary-foreground: #ffffff;
+
+  /* Escalas de color personalizadas */
+  --teal-50: #DBF6F8;
+  --teal-100: #96D5D9;
+  --teal-200: #78ACAF;
+  --teal-300: #5C9588;
+  --teal-400: #416062;
+  --teal-500: #283D3E;
+  --teal-600: #111D1E;
+
+  --pink-50: #F8EEF2;
+  --pink-100: #E9CBD5;
+  --pink-200: #D996B3;
+  --pink-300: #C86193;
+  --pink-400: #94466C;
+  --pink-500: #622D47;
+  --pink-600: #351525;
+
+  --sand-50: #F7E7DB;
+  --sand-100: #D9BC96;
+  --sand-200: #AE9677;
+  --sand-300: #85725A;
+  --sand-400: #5E503E;
+  --sand-500: #393025;
+  --sand-600: #18130D;
+
+  --grayish-50: #EFF1F1;
+  --grayish-100: #C6CBCC;
+  --grayish-200: #A0AAA5;
+  --grayish-300: #7B7F7F;
+  --grayish-400: #595B5C;
+  --grayish-500: #383A3A;
+  --grayish-600: #1B1B1C;
+}
+
+.dark {
+  --color-primary: #283D3E;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #622D47;
+  --color-secondary-foreground: #ffffff;
+
+  --grayish-50: #1B1B1C;
+  --grayish-100: #383A3A;
+  --grayish-200: #595B5C;
+  --grayish-300: #7B7F7F;
+  --grayish-400: #A0AAA5;
+  --grayish-500: #C6CBCC;
+  --grayish-600: #EFF1F1;
+}
+
+
+.bg-primary {
+  background-color: var(--color-primary-foreground);
+}
+
+.bg-secondary {
+  background-color: var(--color-primary);
+}
+
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-secondary-foreground);
+}
+
+
+
+.text-outline-white {
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff;
+}
+
+
+/** Text Gradient TITLE */ 
+.text-gradient {
+ color: #FF1212; 
+ background-image: linear-gradient(270deg, #FF1212 33%, #5C26FC 45%, #F421FF 78%); 
+ background-clip: text; 
+ -webkit-background-clip: text; 
+ -webkit-text-fill-color: transparent; 
+}
 
 
 @layer base {
