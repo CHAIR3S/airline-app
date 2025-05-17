@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import StepperUI from "@/components/ui/stepper-ui";
+import StepperUI from "@/components/stepper-ui";
 import DateSelector from "@/components/ui/date-selector";
 
 export default function ResultsPage() {
