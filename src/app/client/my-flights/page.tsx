@@ -1,10 +1,7 @@
 import Link from "next/link"
-import { Check } from "lucide-react"
-import FlightSummary from "@/components/flight-summary"
-import PriceBreakdown from "@/components/price-breakdown"
-import HotelSuggestion from "@/components/hotel-suggestion"
+import FlightCard from "@/components/flight-card"
 
-export default function ConfirmationPage() {
+export default function MyFlightsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header/Navigation */}
@@ -17,7 +14,7 @@ export default function ConfirmationPage() {
             <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
               Vuelos
             </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
+            <Link href="#" className="text-gray-600 hover:text-[#605DEC] font-medium">
               Ver mis vuelos
             </Link>
             <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
@@ -35,101 +32,60 @@ export default function ConfirmationPage() {
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Success Message */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8 flex items-start">
-            <div className="bg-green-100 rounded-full p-1 mr-3 mt-0.5">
-              <Check className="h-4 w-4 text-green-600" />
-            </div>
-            <div>
-              <p className="text-green-800 font-medium">¡Su vuelo ha sido agendado correctamente!</p>
-              <p className="text-green-700 text-sm">Revise su correo para obtener el resúmen.</p>
-            </div>
-          </div>
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Mis vuelos</h1>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Flight Details */}
-            <div className="lg:col-span-2">
-              <h1 className="text-3xl font-bold text-[#605DEC] mb-6">¡Disfrute su viaje!</h1>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Flight Card 1 */}
+          <FlightCard
+            image="/placeholder.svg?height=300&width=600"
+            departureDate="February 25th, 2021"
+            arrivalDate="March 21st, 2021"
+            duration="16h 45m"
+            airline="Hawaiian Airlines"
+            departureTime="7:00AM"
+            arrivalTime="4:15PM"
+            stops="1 stop"
+            layover="2h 45m in HNL"
+          />
 
-              <p className="text-gray-600 mb-8">
-                Gracias por agendar su viaje con nosotros, debajo se encuentra un resúmen del mismo. Hemos enviado esta
-                información a su correo electrónico. Puede encontrar esta misma información en el apartado{" "}
-                <Link href="#" className="text-[#605DEC] hover:underline">
-                  Ver mis vuelos
-                </Link>
-                .
-              </p>
+          {/* Flight Card 2 */}
+          <FlightCard
+            image="/placeholder.svg?height=300&width=600"
+            departureDate="February 25th, 2021"
+            arrivalDate="March 21st, 2021"
+            duration="16h 45m"
+            airline="Hawaiian Airlines"
+            departureTime="7:00AM"
+            arrivalTime="4:15PM"
+            stops="1 stop"
+            layover="2h 45m in HNL"
+          />
 
-              <div className="mb-10">
-                <h2 className="text-xl font-medium text-gray-800 mb-4">Resúmen del vuelo</h2>
+          {/* Flight Card 3 */}
+          <FlightCard
+            image="/placeholder.svg?height=300&width=600"
+            departureDate="February 25th, 2021"
+            arrivalDate="March 21st, 2021"
+            duration="16h 45m"
+            airline="Hawaiian Airlines"
+            departureTime="7:00AM"
+            arrivalTime="4:15PM"
+            stops="1 stop"
+            layover="2h 45m in HNL"
+          />
 
-                {/* Departing Flight */}
-                <div className="mb-6">
-                  <p className="text-gray-600 mb-2">Departing February 25th, 2021</p>
-                  <FlightSummary
-                    duration="16h 45m"
-                    airline="Hawaiian Airlines"
-                    departureTime="7:00AM"
-                    arrivalTime="4:15PM"
-                    stops="1 stop"
-                    layover="2h 45m in HNL"
-                    price="$624"
-                  />
-                  <p className="text-gray-600 mt-2 text-sm">Seat 9F (economy, window), 1 checked bag</p>
-                </div>
-
-                {/* Arriving Flight */}
-                <div className="mb-6">
-                  <p className="text-gray-600 mb-2">Arriving March 21st, 2021</p>
-                  <FlightSummary
-                    duration="16h 45m"
-                    airline="Hawaiian Airlines"
-                    departureTime="7:00AM"
-                    arrivalTime="4:15PM"
-                    stops="1 stop"
-                    layover="2h 45m in HNL"
-                    price="$624"
-                  />
-                  <p className="text-gray-600 mt-2 text-sm">Seat 4F (business, window), 1 checked bag</p>
-                </div>
-
-                {/* Price Breakdown */}
-                <div className="mt-10">
-                  <h2 className="text-xl font-medium text-gray-800 mb-4">Price breakdown</h2>
-                  <PriceBreakdown />
-                </div>
-              </div>
-            </div>
-
-            {/* Hotel Suggestions */}
-            <div className="lg:col-span-1">
-              <h2 className="text-xl font-medium text-gray-800 mb-6">¿Cuál será tu próxima aventura?</h2>
-
-              <div className="space-y-6">
-                <HotelSuggestion
-                  image="/placeholder.svg?height=300&width=500"
-                  name="Ryokan Japan"
-                  description="Enjoy views of the garden from your room"
-                  price="$439"
-                />
-
-                <HotelSuggestion
-                  image="/placeholder.svg?height=300&width=500"
-                  name="Bessho SASA"
-                  description="Japanese ryokan with private onsen bath"
-                  price="$529"
-                />
-
-                <HotelSuggestion
-                  image="/placeholder.svg?height=300&width=500"
-                  name="HOTEL THE FLAG 大阪市"
-                  description="Modern hotel in the heart of Osaka"
-                  price="$139"
-                />
-              </div>
-            </div>
-          </div>
+          {/* Flight Card 4 */}
+          <FlightCard
+            image="/placeholder.svg?height=300&width=600"
+            departureDate="February 25th, 2021"
+            arrivalDate="March 21st, 2021"
+            duration="16h 45m"
+            airline="Hawaiian Airlines"
+            departureTime="7:00AM"
+            arrivalTime="4:15PM"
+            stops="1 stop"
+            layover="2h 45m in HNL"
+          />
         </div>
       </main>
 
