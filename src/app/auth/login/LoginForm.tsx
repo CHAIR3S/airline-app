@@ -9,42 +9,49 @@ import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { login } from '@/lib/api/auth'
+import { useRouter } from 'next/navigation'
+
 
 const formSchema = z.object({
   email: z.string().email({
     message: "Por favor ingrese un correo electrónico válido.",
   }),
-  password: z.string().min(8, {
+  password: z.string().min(4, {
     message: "La contraseña debe tener al menos 8 caracteres.",
-  }),
-  terms: z.boolean().refine((val) => val === true, {
-    message: "Debe aceptar los términos y condiciones para continuar.",
   }),
 })
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
-      terms: false,
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // Simulamos el envío del formulario
-    setTimeout(() => {
-      console.log(values)
-      setIsLoading(false)
-    }, 1500)
+  
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    setErrorMessage('');
+
+    try {
+      await login(values.email, values.password);
+      router.push('/home');
+    } catch (error: any) {
+      setErrorMessage(error.message); // ✅ muestra el mensaje "Credenciales inválidas"
+    } finally {
+      setIsLoading(false);
+    }
   }
+
 
   return (
     <Card className="rounded-2xl w-full max-w-md shadow-lg border-white ">
@@ -106,7 +113,7 @@ export function LoginForm() {
                 </FormItem>
               )}
             /> */}
-            <Button type="submit" className="w-full btn-primary rounded-2xl mt-1.5" disabled={isLoading}>
+            <Button type="submit" className="w-full btn-primary rounded-2xl mt-1.5 cursor-pointer" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -116,6 +123,10 @@ export function LoginForm() {
                 "Crear cuenta"
               )}
             </Button>
+            {errorMessage && (
+  <p className="text-sm text-red-600 text-center">{errorMessage}</p>
+)}
+
           </form>
         </Form>
       </CardContent>
