@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import StepperUI from "@/components/stepper-ui";
 import DateSelector from "@/components/ui/date-selector";
 
-export default function ResultsPage() {
+export default function Page() {
     const flights = [
         {
             id: 1,
@@ -145,7 +145,6 @@ export default function ResultsPage() {
                         </div>
                     </aside>
 
-                    {/* Main content with date picker and results */}
                     <section className="lg:w-3/4">
                         <DateSelector />
                         <div className="mt-6 space-y-4">

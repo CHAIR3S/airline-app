@@ -1,8 +1,21 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import HotDeal from "./HotDeal";
+import { useEffect, useState } from "react";
+import { Place, PlaceAPI } from "@/lib/api/place";
+import PlaceCard from "@/components/place-card";
 
 export default function Home() {
+  const [places, setPlaces] = useState<Place[]>([]);
+
+  useEffect(() => {
+    PlaceAPI.getAll()
+      .then(setPlaces)
+      .catch((err) => alert(err.message));
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="absolute inset-0 z-0">
@@ -19,9 +32,6 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 ">
-
-
-
         {/* Header/Navigation */}
         {/* <header className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="text-2xl font-bold text-[#605DEC]">Tripma</div>
@@ -43,10 +53,6 @@ export default function Home() {
             </Link>
           </nav>
         </header> */}
-
-
-
-
         {/* Hero Section */}
         <section className="relative py-16 md:pb-[25vh] pt-[17vh]">
           <div className="absolute inset-0 -z-10 bg-[url('/placeholdser.svg?height=800&width=1600')] bg-cover bg-center opacity-10"></div>
@@ -274,20 +280,16 @@ export default function Home() {
             </div>
           </div>
         </section>
-
-
         {/* Hot Deals Section */}
         <HotDeal />
-
-
-        
         {/* Destinations Section */}
         <section className="py-16 container mx-auto px-4">
           <h2 className="text-2xl font-medium text-center text-gray-700 mb-12">
             Encuentra tu próxima aventura...
           </h2>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            {/* <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <div className="relative h-64">
                 <Image
                   src="/placeholder.svg?height=400&width=600"
@@ -309,34 +311,42 @@ export default function Home() {
                   <span className="text-lg font-medium">$598</span>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="relative h-64">
-                <Image
-                  src="/placeholder.svg?height=400&width=600"
-                  alt="Sydney"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-medium">
-                      Sydney Opera House,{" "}
-                      <span className="text-[#605DEC]">Sydney</span>
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      Take a stroll along the famous harbor
-                    </p>
-                  </div>
-                  <span className="text-lg font-medium">$981</span>
-                </div>
-              </div>
-            </div>
+            {places.map((place) => (
+              // <div
+              //   key={place.placeId}
+              //   className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+              // >
+              //   <div className="relative h-64 w-full">
+              //     <Image
+              //       src={`data:image/png;base64,${place.photo}`}
+              //       alt={place.name}
+              //       fill
+              //       className="object-cover"
+                  
+              //     />
+              //   </div>
+              //   <div className="p-4">
+              //     <div className="flex justify-between items-start mb-2">
+              //       <div>
+              //         <h3 className="font-medium">
+              //           {place.name},{" "}
+              //           <span className="text-[#605DEC]">{place.city}</span>
+              //         </h3>
+              //         <p className="text-gray-500 text-sm">
+              //           {place.country}
+              //         </p>
+              //       </div>
+              //       <span className="text-lg font-medium">{place.cost}</span>
+              //     </div>
+              //   </div>
+              // </div>
 
-            <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              <PlaceCard key={place.placeId} {...place} />
+            ))}
+
+            {/* <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               <div className="relative h-64">
                 <Image
                   src="/placeholder.svg?height=400&width=600"
@@ -359,7 +369,7 @@ export default function Home() {
                   <span className="text-lg font-medium">$633</span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
         {/* Stays Section */}
