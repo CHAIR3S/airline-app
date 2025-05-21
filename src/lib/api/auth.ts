@@ -1,7 +1,7 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://airline-service-f9h1.onrender.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://airline-service-f9h1.onrender.com';
 
 export async function login(email: string, password: string) {
-  const res = await fetch(`${API_URL}/auth/login`, {
+  const res = await fetch(`${API_BASE}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -32,7 +32,7 @@ export async function register(userData: {
   address: string;
   role?: string;
 }) {
-  const res = await fetch(`${API_URL}/users`, {
+  const res = await fetch(`${API_BASE}/users`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),
@@ -55,7 +55,7 @@ export async function refreshAccessToken() {
     throw new Error('No hay refresh token disponible');
   }
 
-  const res = await fetch(`${API_URL}/auth/refresh`, {
+  const res = await fetch(`${API_BASE}/auth/refresh`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken }),
