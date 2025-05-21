@@ -5,8 +5,21 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import StepperUI from "@/components/stepper-ui";
 import DateSelector from "@/components/ui/date-selector";
+import { PlaceAPI } from "@/lib/api/place";
 
-export default function Page() {
+export default async function DatePage( { params }: { params: { placeId: number } } ) {
+
+    
+  const place = await PlaceAPI.getOne(params.placeId);
+
+  if (!place) {
+    return (
+      <div className="p-10 text-center text-gray-600">
+        <h1 className="text-2xl font-semibold">Lugar no encontrado</h1>
+      </div>
+    );
+  }
+
     const flights = [
         {
             id: 1,

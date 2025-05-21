@@ -314,34 +314,6 @@ export default function Home() {
             </div> */}
 
             {places.map((place) => (
-              // <div
-              //   key={place.placeId}
-              //   className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-              // >
-              //   <div className="relative h-64 w-full">
-              //     <Image
-              //       src={`data:image/png;base64,${place.photo}`}
-              //       alt={place.name}
-              //       fill
-              //       className="object-cover"
-                  
-              //     />
-              //   </div>
-              //   <div className="p-4">
-              //     <div className="flex justify-between items-start mb-2">
-              //       <div>
-              //         <h3 className="font-medium">
-              //           {place.name},{" "}
-              //           <span className="text-[#605DEC]">{place.city}</span>
-              //         </h3>
-              //         <p className="text-gray-500 text-sm">
-              //           {place.country}
-              //         </p>
-              //       </div>
-              //       <span className="text-lg font-medium">{place.cost}</span>
-              //     </div>
-              //   </div>
-              // </div>
 
               <PlaceCard key={place.placeId} {...place} />
             ))}
