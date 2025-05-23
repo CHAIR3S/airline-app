@@ -52,4 +52,18 @@ export class PlaceAPI {
 
     return res.json();
   }
+
+  
+  static async getNearestPlace(lat: number, lng: number) {
+    const res = await fetch(`${API_BASE}/place/nearest/${lat}/${lng}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error("No se pudo obtener el lugar más cercano");
+    }
+
+    return res.json();
+  }
+
 }
