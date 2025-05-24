@@ -23,21 +23,35 @@ export type DateSelectorProps = {
   data: DateItem[];
   originId: number;
   destinationId: number;
+  setFlights: any;
 };
 
-export default function DateSelector({data, originId, destinationId}: DateSelectorProps) {
+export default function DateSelector({data, originId, destinationId, setFlights}: DateSelectorProps ) {
   // Estado para el arrastre
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [scrollLeft, setScrollLeft] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const [flights, setFlights] = useState([]);
+
+  
+const hasSelectedOnce = useRef(false);
+
+useEffect(() => {
+  if (!hasSelectedOnce.current && data.length > 0) {
+    selectDate(0); // selecciona la primera fecha y hace fetch
+    hasSelectedOnce.current = true;
+  }
+}, [data]);
+
+
+
+
 
   console.log("data", data)
 
-
-
   const [dates, setDates] = useState(data)
+
+
 
   // Manejar el inicio del arrastre
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -79,29 +93,32 @@ export default function DateSelector({data, originId, destinationId}: DateSelect
     })
   }
 
-  // Seleccionar una fecha
-  const selectDate = async (index: number) =>  {
-    setDates(
-      dates.map((date, i) => ({
-        ...date,
-        isSelected: i === index,
-      })),
-    )
+const selectDate = async (index: number) => {
+  // set visual state
+  setDates(
+    data.map((d, i) => ({
+      ...d,
+      isSelected: i === index,
+    })),
+  );
 
-    console.log("index", dates[index].date)
+  const selected = data[index]; // usa directamente `data`, no `dates`
 
-    const flightsDate = await FlightApi.getFlightsByDate(
-      `${dates[index].year}-${dates[index].monthNumber}-${dates[index].date}`,
-      originId,
-      destinationId,
-    )
+  const flightsDate = await FlightApi.getFlightsByDate(
+    `${selected.year}-${selected.monthNumber}-${selected.date}`,
+    originId,
+    destinationId,
+  );
 
-    setFlights(flightsDate);
+  setFlights(flightsDate);
 
-    console.log("flights", flightsDate)
-    // console.log("flights", flights)
+  console.log("flights", flightsDate);
 
-  }
+};
+
+
+
+
 
   // Añadir y eliminar event listeners para el mouse up
   useEffect(() => {

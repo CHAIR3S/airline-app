@@ -35,7 +35,8 @@ export default function RootLayout({
         <header className="w-[90vw]  mx-auto  py-4 flex justify-between items-center z-20   ">
           <div className="text-4xl font-bold text-secondary ">
             
-            <Image src={"/external/odisea-logo.png"} alt="odisea-logo" width={120} height={120} className="absolute top-[-2vh] " />
+            <p>Odisea</p>
+            {/* <Image src={"/external/odisea-logo.png"} alt="odisea-logo" width={120} height={120} className="absolute top-[-2vh] " /> */}
           </div>
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="#" className="text-gray-600 hover:text-[#605DEC] font-semibold text-outline-white">

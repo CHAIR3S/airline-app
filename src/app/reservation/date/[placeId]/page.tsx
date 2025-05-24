@@ -9,16 +9,27 @@ import { Place, PlaceAPI } from "@/lib/api/place";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FlightApi } from "@/lib/api/flight";
+import { Flight } from "@/types/flight";
+import { flightDuration, formatIsoToHHMM } from "@/utils/datetime";
+import { calcularPrecioVuelo } from "@/utils/pricing";
 
 
 
 export default function DatePage() {
   const { placeId } = useParams();
   
+  // hook lugar de destino
   const [destinationPlace, setDestinationPlace] = useState<Place | null>(null);
+
+  //hook lugar de origen
   const [originPlace, setOriginPlace] = useState<Place | null>(null);
+
+  // hook contador
   
+  //hook para fechas
   const [dates, setDates] = useState<string[]>([]);
+  
+  // hook para error
   const [error, setError] = useState("");
 
   // Obtener el destino (desde el parámetro placeId de la URL)
@@ -68,7 +79,7 @@ export default function DatePage() {
   }, []);
 
 
-  const [flight, setFlight] = useState<any>(null);
+  const [flights, setFlights] = useState<any>([]);
 
 
   if (!destinationPlace) return <p className="p-6">Cargando...</p>;
@@ -115,62 +126,10 @@ export default function DatePage() {
     data: convertDates(dates),
     originId: originPlace?.placeId || 0,
     destinationId: destinationPlace.placeId || 0,
+    setFlights: setFlights
   }
 
 
-
-
-
-  // const flights = [
-  //   {
-  //     id: 1,
-  //     airline: "Delta Airlines",
-  //     logo: "/placeholder.svg?height=80&width=80",
-  //     from: "NYC",
-  //     to: "CHS",
-  //     departureTime: "22:30",
-  //     arrivalTime: "23:45",
-  //     duration: "1H - 15M",
-  //     type: "Non-Stop",
-  //     price: "$300",
-  //   },
-  //   {
-  //     id: 2,
-  //     airline: "Spirit Airlines",
-  //     logo: "/placeholder.svg?height=80&width=80",
-  //     from: "NYC",
-  //     to: "CHS",
-  //     departureTime: "22:30",
-  //     arrivalTime: "23:45",
-  //     duration: "1H - 15M",
-  //     type: "Non-Stop",
-  //     price: "$300",
-  //   },
-  //   {
-  //     id: 3,
-  //     airline: "American Airlines",
-  //     logo: "/placeholder.svg?height=80&width=80",
-  //     from: "NYC",
-  //     to: "CHS",
-  //     departureTime: "18:15",
-  //     arrivalTime: "20:45",
-  //     duration: "2H - 30M",
-  //     type: "1 Escala (MIA)",
-  //     price: "$320",
-  //   },
-  //   {
-  //     id: 4,
-  //     airline: "United Airlines",
-  //     logo: "/placeholder.svg?height=80&width=80",
-  //     from: "NYC",
-  //     to: "CHS",
-  //     departureTime: "16:00",
-  //     arrivalTime: "19:15",
-  //     duration: "3H - 15M",
-  //     type: "1 Escala (ATL)",
-  //     price: "$290",
-  //   },
-  // ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -282,42 +241,44 @@ export default function DatePage() {
           <section className="lg:w-3/4">
               <DateSelector  {...originDestination} /> 
             <div className="mt-6 space-y-4">
-              <h2 className="text-2xl font-bold mb-2">4 Results</h2>
-              {flights.map((flight) => (
+              <h2 className="text-2xl font-bold mb-2">{`${flights.length} resultados`}</h2>
+              {flights.map((flight: Flight) => (
                 <div
-                  key={flight.id}
+                  key={flight.flightId}
                   className="bg-white rounded-lg shadow-sm p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center gap-4">
                     <Image
-                      src={flight.logo}
-                      alt={flight.airline}
-                      width={64}
-                      height={64}
+                      src={flight.airline.logoUrl}
+                      alt={flight.airline.name}
+                      width={110}
+                      height={125}
                       className="object-contain"
                     />
-                    <div className="text-center md:text-left">
-                      <div className="text-lg font-semibold">{flight.from}</div>
+                    <div className="text-center ">
+                      <div className="text-lg font-semibold">{flight.origin.name}</div>
                       <div className="text-blue-500">
-                        {flight.departureTime}
+                        {formatIsoToHHMM(flight.departureTime)}
                       </div>
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="font-medium">{flight.airline}</div>
+                    <div className="font-medium">{flight.airline.name}</div>
                     <div className="text-sm text-gray-600">
-                      {flight.duration}
+                      {flightDuration(flight.departureTime, flight.arrivalTime)}
                     </div>
-                    <div className="text-sm text-gray-500">{flight.type}</div>
+                    {/* <div className="text-sm text-gray-500">{flight.type}</div> */}
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold">{flight.to}</div>
-                    <div className="text-blue-500">{flight.arrivalTime}</div>
+                    <div className="text-lg font-semibold">{flight.destination.city}</div>
+                    <div className="text-blue-500">{formatIsoToHHMM(flight.arrivalTime)}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold">{flight.price}</div>
-                    <button className="bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors">
-                      Book Now
+                    <div className="text-2xl font-bold">{calcularPrecioVuelo(flight.origin.latitude, flight.origin.longitude, flight.destination.latitude, flight.destination.longitude, flight.departureTime, 0)}</div>
+                    <button className="
+                    max-sm:w-full
+                    bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors">
+                      Reservar
                     </button>
                   </div>
                 </div>
