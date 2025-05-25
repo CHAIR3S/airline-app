@@ -5,21 +5,18 @@ import type React from "react"
 import { useState } from "react"
 // import { motion } from "framer-motion"
 
-export default function PassengerForm() {
-  const [formData, setFormData] = useState({
-    nombres: "",
-    apellidos: "",
-    knowles: "",
-    telefono: "",
-    fechaNacimiento: "",
-    email: "sophiaknowles89@tripma.com",
-    numeroConfirmacion: "123-456-7890",
-    redressNumber: "123456789",
-  })
+export default function PassengerForm({
+  formData,
+  setFormData,
+}: {
+  formData: any;
+  setFormData: React.Dispatch<React.SetStateAction<any>>;
+}) {
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev: any) => ({ ...prev, [name]: value }))
   }
 
   return (
@@ -55,20 +52,6 @@ export default function PassengerForm() {
           />
         </div>
 
-        <div>
-          <label htmlFor="knowles" className="block text-sm font-medium text-gray-700 mb-1">
-            Knowles
-          </label>
-          <input
-            type="text"
-            id="knowles"
-            name="knowles"
-            value={formData.knowles}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#605DEC] focus:border-[#605DEC] transition-all duration-200"
-            placeholder="Knowles"
-          />
-        </div>
 
         <div>
           <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">
@@ -90,7 +73,7 @@ export default function PassengerForm() {
             Fecha de nacimiento
           </label>
           <input
-            type="text"
+            type="date"
             id="fechaNacimiento"
             name="fechaNacimiento"
             value={formData.fechaNacimiento}
@@ -134,20 +117,6 @@ export default function PassengerForm() {
           />
         </div>
 
-        <div>
-          <label htmlFor="redressNumber" className="block text-sm font-medium text-gray-700 mb-1">
-            Redress number
-          </label>
-          <input
-            type="text"
-            id="redressNumber"
-            name="redressNumber"
-            value={formData.redressNumber}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#605DEC] focus:border-[#605DEC] transition-all duration-200"
-            placeholder="Redress number"
-          />
-        </div>
       </div>
 
       <div className="mt-6">

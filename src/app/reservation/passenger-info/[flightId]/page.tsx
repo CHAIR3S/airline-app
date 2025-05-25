@@ -1,12 +1,58 @@
+'use client'
 
 import Link from "next/link"
 import StepperUI from "@/components/stepper-ui"
 import PassengerForm from "@/components/passenger-form"
-import FlightInfo from "@/components/flight-info"
+import FlightInfo, { FlightData } from "@/components/flight-info"
 import SeatSelector from "@/components/seat-selector"
 import { ArrowLeft } from "lucide-react"
+import { useEffect, useState } from "react"
+import { FlightApi } from "@/lib/api/flight"
+import { useParams } from "next/navigation"
+import { Flight } from "@/types/flight"
 
 export default function PassengerInfoPage() {
+
+  const { flightId } = useParams();
+
+  const [flight, setFlight] = useState<Flight>();
+
+  // obtener el avion (desde el parámetro flightId de la URL)
+  useEffect(() => {
+    if (!flightId) return;
+
+    FlightApi.getFlightById(Number(flightId))
+      .then((data: Flight) => {
+        setFlight(data)
+        console.log(data);
+      })
+      .catch(console.error);
+
+  }, [flightId]);
+      
+
+  const properties: FlightData  = {
+    flightId: flight?.flightId,
+    origin: flight?.origin,
+    destination: flight?.destination,
+    departureDate: flight?.arrivalTime,
+    arrivalDate: flight?.arrivalTime,
+    airline: flight?.airline,
+    weather: flight?.destination.weather
+  }
+     
+  
+    const [formData, setFormData] = useState({
+      nombres: "",
+      apellidos: "",
+      telefono: "",
+      fechaNacimiento: "",
+      email: "sophia89@tripma.com",
+      numeroConfirmacion: "123-456-7890",
+    })
+
+
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
             {/* Search Summary */}
@@ -19,8 +65,8 @@ export default function PassengerInfoPage() {
             </Link>
             <div className="mx-4 text-gray-300">|</div>
             <div>
-              <span className="font-medium">{"dsfdf"}</span> →{" "}
-              <span className="font-medium">{"dfdsf"}</span> · 24 mayo · 1 adulto
+              <span className="font-medium">{flight?.origin.name}</span> →{" "}
+              <span className="font-medium">{flight?.destination.name}</span> · 24 mayo · 1 adulto
             </div>
           </div>
         </div>
@@ -43,7 +89,8 @@ export default function PassengerInfoPage() {
               Ingrese la información requerida, y asegúrese que coincida con la que está contenida en el ID del
               pasaporte.
             </p>
-            <PassengerForm />
+            
+            <PassengerForm formData={formData} setFormData={setFormData} />
 
             {/* Seat Selector Section */}
             <div className="mt-12">
@@ -53,7 +100,9 @@ export default function PassengerInfoPage() {
 
             {/* Continue Button */}
             <div className="mt-8 flex justify-center">
-              <button className="bg-[#605DEC] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#4F4ADB] transition-colors">
+              <button
+                onClick={() => console.log(formData)}
+                className="bg-[#605DEC] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#4F4ADB] transition-colors">
                 Guardar y continuar con el pago
               </button>
             </div>
@@ -62,7 +111,7 @@ export default function PassengerInfoPage() {
           {/* Flight Information Sidebar */}
           <div className="lg:col-span-1">
             <h2 className="text-2xl font-bold mb-6 text-[#605DEC]">Información del vuelo</h2>
-            <FlightInfo />
+            <FlightInfo {...properties} />
           </div>
         </div>
       </main>
