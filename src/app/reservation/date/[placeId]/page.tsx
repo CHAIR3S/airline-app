@@ -12,6 +12,7 @@ import { FlightApi } from "@/lib/api/flight";
 import { Flight } from "@/types/flight";
 import { flightDuration, formatIsoToHHMM } from "@/utils/datetime";
 import { calcularPrecioVuelo } from "@/utils/pricing";
+import { useRouter } from "next/navigation";
 
 
 
@@ -31,6 +32,8 @@ export default function DatePage() {
   
   // hook para error
   const [error, setError] = useState("");
+
+  const router = useRouter()
 
   // Obtener el destino (desde el parámetro placeId de la URL)
   useEffect(() => {
@@ -275,9 +278,15 @@ export default function DatePage() {
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold">{calcularPrecioVuelo(flight.origin.latitude, flight.origin.longitude, flight.destination.latitude, flight.destination.longitude, flight.departureTime, 0)}</div>
-                    <button className="
+                    <button
+                      onClick={() => {
+                        console.log("Reservar vuelo", flight.flightId);
+                        router.push(`/reservation/passenger-info/${flight.flightId}`);
+                      }}
+                    className="
                     max-sm:w-full
-                    bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors">
+                    bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors
+                    cursor-pointer">
                       Reservar
                     </button>
                   </div>

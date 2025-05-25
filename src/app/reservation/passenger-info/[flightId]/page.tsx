@@ -1,37 +1,30 @@
+
 import Link from "next/link"
 import StepperUI from "@/components/stepper-ui"
 import PassengerForm from "@/components/passenger-form"
 import FlightInfo from "@/components/flight-info"
 import SeatSelector from "@/components/seat-selector"
+import { ArrowLeft } from "lucide-react"
 
 export default function PassengerInfoPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Header/Navigation */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-[#605DEC]">
-            Tripma
-          </Link>
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Vuelos
+            {/* Search Summary */}
+      <div className="bg-white border-b border-gray-200 py-4">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center text-sm text-gray-600">
+            <Link href="/" className="flex items-center hover:text-[#605DEC]">
+              <ArrowLeft size={16} className="mr-2" />
+              Modificar búsqueda
             </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Ver mis vuelos
-            </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Inicio de sesión
-            </Link>
-            <Link
-              href="#"
-              className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors"
-            >
-              Registro
-            </Link>
-          </nav>
+            <div className="mx-4 text-gray-300">|</div>
+            <div>
+              <span className="font-medium">{"dsfdf"}</span> →{" "}
+              <span className="font-medium">{"dfdsf"}</span> · 24 mayo · 1 adulto
+            </div>
+          </div>
         </div>
-      </header>
+      </div>
 
       {/* Stepper UI */}
       <div className="border-b border-gray-200 bg-white">
