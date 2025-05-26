@@ -13,26 +13,22 @@ import { Flight } from "@/types/flight";
 import { flightDuration, formatIsoToHHMM } from "@/utils/datetime";
 import { calcularPrecioVuelo } from "@/utils/pricing";
 
-
-
 export default function DatePage() {
   const { placeId } = useParams();
-  
-  // hook lugar de destino
+
   const [destinationPlace, setDestinationPlace] = useState<Place | null>(null);
-
-  //hook lugar de origen
   const [originPlace, setOriginPlace] = useState<Place | null>(null);
-
-  // hook contador
-  
-  //hook para fechas
   const [dates, setDates] = useState<string[]>([]);
-  
-  // hook para error
   const [error, setError] = useState("");
+  const [maxPrice, setMaxPrice] = useState(1000);
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [airlines, setAirlines] = useState<any[]>([]);
 
-  // Obtener el destino (desde el parámetro placeId de la URL)
+  const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
+  const [selectedPrice, setSelectedPrice] = useState<number>(25000);
+  const [selectedDuration, setSelectedDuration] = useState<number>(24);
+
+  // Efecto para obtener el lugar de destino
   useEffect(() => {
     if (!placeId) return;
 
@@ -41,79 +37,71 @@ export default function DatePage() {
       .catch(console.error);
   }, [placeId]);
 
+  // Efecto para obtener la ubicación actual del usuario
   useEffect(() => {
     if (!navigator.geolocation) return;
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-
-          try {
-            const result = await PlaceAPI.getNearestPlace(lat, lng);
-            setOriginPlace(result);
-          } catch (err: any) {
-            console.log(err);
-          }
+        try {
+          const result = await PlaceAPI.getNearestPlace(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          setOriginPlace(result);
+        } catch (err) {
+          console.error("Error obteniendo el lugar más cercano:", err);
+        }
       },
-      (error) => {
-        console.error('Error getting location', error);
-      },
+      (error) => console.error("Error obteniendo la ubicación", error),
       { enableHighAccuracy: true }
     );
   }, []);
 
-
+  // Efecto para obtener las fechas programadas
   useEffect(() => {
-    const fetchDates = async () => {
-      try {
-        const data = await FlightApi.getScheduledDates(1, 2); 
-        setDates(data);
-        console.log(data);
-      } catch (err: any) {
-        setError(err.message);
-      }
-    };
-
-    fetchDates();
+    FlightApi.getScheduledDates(1, 2) // Reemplazar 1 y 2 por originPlace?.placeId y destinationPlace?.placeId
+      .then((data) => setDates(data))
+      .catch((err) => setError(err.message));
   }, []);
 
+  // Efecto para obtener los vuelos según las fechas seleccionadas
+  useEffect(() => {
+    if (!originPlace || !destinationPlace || !dates.length) return;
 
-  const [flights, setFlights] = useState<any>([]);
+    FlightApi.getFlightsByDate(dates[0], originPlace.placeId, destinationPlace.placeId)
+      .then((response) => {
+        console.log("✈️ Vuelos recibidos:", response);
+        setFlights(response);
+      })
+      .catch((err) => setError(err.message));
+  }, [originPlace, destinationPlace, dates]);
 
+  // Efecto para obtener las aerolíneas disponibles
+  useEffect(() => {
+    fetch("http://localhost:4000/airline")
+      .then((res) => res.json())
+      .then((data) => {
+        setAirlines(data);
+        setSelectedAirlines(data.map((a: any) => a.name)); // Selecciona todas las aerolíneas al inicio
+      })
+      .catch(console.error);
+  }, []);
 
   if (!destinationPlace) return <p className="p-6">Cargando...</p>;
   if (!dates.length) return <p className="text-gray-500">Cargando fechas...</p>;
 
-
-
   function convertDates(dates: string[]): DateItem[] {
     return dates.map((isoDate) => {
       const date = new Date(isoDate);
-
       const day = date.getDate().toString().padStart(2, "0");
-      const monthNumber = Number((date.getMonth() + 1).toString().padStart(2, "0")); // 01-12
+      const monthNumber = Number((date.getMonth() + 1).toString().padStart(2, "0"));
       const year = date.getFullYear().toString();
-
-      const formatter = new Intl.DateTimeFormat("es-MX", {
-        weekday: "short",
-        month: "short",
-      });
-
+      const formatter = new Intl.DateTimeFormat("es-MX", { weekday: "short", month: "short" });
       const parts = formatter.formatToParts(date);
       const weekday = parts.find((p) => p.type === "weekday")?.value || "";
       const monthText = parts.find((p) => p.type === "month")?.value || "";
-
-      const result: DateItem = {
-          day: capitalize(weekday),    // Ej: "Jue"
-          date: day,                   // Ej: "22"
-          month: capitalize(monthText),// Ej: "May"
-          monthNumber,                // Ej: "05"
-          year,                       // Ej: "2025"
-          isSelected: false,          // Estado inicial
-        }
-
-      return result;
+      return { day: capitalize(weekday), date: day, month: capitalize(monthText), monthNumber, year, isSelected: false };
     });
   }
 
@@ -121,19 +109,48 @@ export default function DatePage() {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
 
+  const filteredFlights = flights.filter((flight) => {
+    const airlineMatch = selectedAirlines.includes(flight.airline.name);
+
+    const flightHours =
+      (new Date(flight.arrivalTime).getTime() -
+        new Date(flight.departureTime).getTime()) /
+      3600000;
+    const durationMatch = flightHours <= selectedDuration;
+
+    const price = calcularPrecioVuelo(
+      flight.origin.latitude,
+      flight.origin.longitude,
+      flight.destination.latitude,
+      flight.destination.longitude,
+      flight.departureTime,
+      0
+    );
+    const priceMatch = price <= selectedPrice;
+
+    console.log("✈️ Evaluando:", {
+      airline: flight.airline.name,
+      price,
+      priceMatch,
+      flightHours,
+      durationMatch,
+      airlineMatch
+    });
+
+    return airlineMatch && durationMatch && priceMatch;
+  });
+
+
 
   const originDestination: DateSelectorProps = {
     data: convertDates(dates),
     originId: originPlace?.placeId || 0,
     destinationId: destinationPlace.placeId || 0,
-    setFlights: setFlights
-  }
-
-
+    setFlights
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Search Summary */}
       <div className="bg-white border-b border-gray-200 py-4">
         <div className="container mx-auto px-4">
           <div className="flex items-center text-sm text-gray-600">
@@ -143,110 +160,100 @@ export default function DatePage() {
             </Link>
             <div className="mx-4 text-gray-300">|</div>
             <div>
-              <span className="font-medium">{originPlace?.city}</span> →{" "}
-              <span className="font-medium">{destinationPlace.city}</span> · 24 mayo · 1 adulto
+              <span className="font-medium">{originPlace?.city}</span> → <span className="font-medium">{destinationPlace.city}</span> · 24 mayo · 1 adulto
             </div>
           </div>
         </div>
       </div>
 
-      {/* Stepper UI */}
       <div className="border-b border-gray-200 bg-white">
         <div className="container mx-auto px-4 py-6">
           <StepperUI currentStep={1} totalSteps={3} />
         </div>
       </div>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar with filters */}
           <aside className="lg:w-1/4">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="font-medium text-lg mb-4">Filtros</h2>
 
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Precio
-                </h3>
-                <input
-                  type="range"
-                  min="0"
-                  max="1000"
-                  defaultValue="300"
-                  className="w-full accent-[#605DEC]"
-                />
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Precio</h3>
+                <input type="range" min="0" max="30000" value={selectedPrice} onChange={(e) => setSelectedPrice(Number(e.target.value))} className="w-full accent-[#605DEC]" />
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                   <span>$0</span>
-                  <span>$1000</span>
+                  <span>${selectedPrice}</span>
                 </div>
               </div>
 
+              {/* Filtros de aerolíneas */}
               <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Aerolíneas
-                </h3>
-                {[
-                  "Delta Airlines",
-                  "Spirit Airlines",
-                  "American Airlines",
-                  "United Airlines",
-                ].map((airline, idx) => (
-                  <label key={idx} className="flex items-center mb-1 text-sm">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Aerolíneas</h3>
+                {airlines.map((airline) => (
+                  <label
+                    key={airline.airlineId}
+                    className="flex items-center mb-2 text-sm"
+                  >
                     <input
                       type="checkbox"
                       className="mr-2 accent-[#605DEC]"
-                      defaultChecked={idx < 2}
+                      checked={selectedAirlines.includes(airline.name)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedAirlines([...selectedAirlines, airline.name]);
+                        } else {
+                          setSelectedAirlines(
+                            selectedAirlines.filter((a) => a !== airline.name)
+                          );
+                        }
+                      }}
                     />
-                    {airline}
+                    <img
+                      src={airline.logoUrl}
+                      alt={airline.name}
+                      className="w-5 h-5 object-contain mr-2"
+                    />
+                    {airline.name}
                   </label>
                 ))}
               </div>
 
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Escalas
-                </h3>
-                {["Directo", "1 escala", "2+ escalas"].map((scale, idx) => (
-                  <label key={idx} className="flex items-center mb-1 text-sm">
-                    <input
-                      type="checkbox"
-                      className="mr-2 accent-[#605DEC]"
-                      defaultChecked={idx === 0}
-                    />
-                    {scale}
-                  </label>
-                ))}
-              </div>
-
+              {/* Filtro de duración */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Duración
-                </h3>
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Duración</h3>
                 <input
                   type="range"
                   min="0"
                   max="24"
-                  defaultValue="2"
+                  value={selectedDuration}
+                  onChange={(e) => setSelectedDuration(Number(e.target.value))}
                   className="w-full accent-[#605DEC]"
                 />
                 <div className="flex justify-between text-xs text-gray-500 mt-1">
                   <span>0h</span>
-                  <span>24h</span>
+                  <span>{selectedDuration}h</span>
                 </div>
               </div>
             </div>
           </aside>
 
           <section className="lg:w-3/4">
-              <DateSelector  {...originDestination} /> 
+            <DateSelector {...originDestination} />
             <div className="mt-6 space-y-4">
-              <h2 className="text-2xl font-bold mb-2">{`${flights.length} resultados`}</h2>
-              {flights.map((flight: Flight) => (
+              <h2 className="text-2xl font-bold mb-2">{`${filteredFlights.length} resultados`}</h2>
+              {filteredFlights.length === 0 && (
+                <p className="text-center text-gray-500 mt-4">
+                  No se encontraron vuelos con los filtros actuales.
+                </p>
+              )}
+
+              {filteredFlights.map((flight) => (
                 <div
                   key={flight.flightId}
                   className="bg-white rounded-lg shadow-sm p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:shadow-md transition-shadow"
                 >
+                  {/* Información del origen */}
                   <div className="flex items-center gap-4">
                     <Image
                       src={flight.airline.logoUrl}
@@ -255,29 +262,41 @@ export default function DatePage() {
                       height={125}
                       className="object-contain"
                     />
-                    <div className="text-center ">
+                    <div className="text-center">
                       <div className="text-lg font-semibold">{flight.origin.name}</div>
-                      <div className="text-blue-500">
-                        {formatIsoToHHMM(flight.departureTime)}
-                      </div>
+                      <div className="text-blue-500">{formatIsoToHHMM(flight.departureTime)}</div>
                     </div>
                   </div>
+
+                  {/* Información de la aerolínea */}
                   <div className="text-center">
                     <div className="font-medium">{flight.airline.name}</div>
                     <div className="text-sm text-gray-600">
                       {flightDuration(flight.departureTime, flight.arrivalTime)}
                     </div>
-                    {/* <div className="text-sm text-gray-500">{flight.type}</div> */}
                   </div>
+
+                  {/* Información del destino */}
                   <div className="text-center">
                     <div className="text-lg font-semibold">{flight.destination.city}</div>
                     <div className="text-blue-500">{formatIsoToHHMM(flight.arrivalTime)}</div>
                   </div>
+
+                  {/* Precio y botón de reserva */}
                   <div className="text-right">
-                    <div className="text-2xl font-bold">{calcularPrecioVuelo(flight.origin.latitude, flight.origin.longitude, flight.destination.latitude, flight.destination.longitude, flight.departureTime, 0)}</div>
-                    <button className="
-                    max-sm:w-full
-                    bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors">
+                    <div className="text-2xl font-bold">
+                      {calcularPrecioVuelo(
+                        flight.origin.latitude,
+                        flight.origin.longitude,
+                        flight.destination.latitude,
+                        flight.destination.longitude,
+                        flight.departureTime,
+                        0
+                      )}
+                    </div>
+                    <button
+                      className="max-sm:w-full bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors"
+                    >
                       Reservar
                     </button>
                   </div>
