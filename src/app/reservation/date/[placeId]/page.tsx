@@ -292,8 +292,10 @@ export default function DatePage() {
                         flight.destination.longitude,
                         flight.departureTime,
                         0
-                      )}
+                      ).toLocaleString("es-MX", { style: "currency", currency: "MXN" })}
                     </div>
+
+
                     <button
                       className="max-sm:w-full bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors"
                     >
