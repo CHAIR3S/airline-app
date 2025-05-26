@@ -17,6 +17,30 @@ export default function PassengerInfoPage() {
 
   const [flight, setFlight] = useState<Flight>();
 
+  
+  const [formData, setFormData] = useState({
+    nombres: "",
+    apellidos: "",
+    telefono: "",
+    fechaNacimiento: "",
+    email: "sophia89@tripma.com",
+    numeroConfirmacion: "123-456-7890",
+  })
+
+  // guardar formulario en localstorage
+  useEffect(() => {
+    localStorage.setItem("passenger-form", JSON.stringify(formData));
+
+    console.log("form data en local storage", formData);
+  }, [formData]);
+
+
+  //detectar cambios en el formulario
+  const handleChange = (e:any) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+
   // obtener el avion (desde el parámetro flightId de la URL)
   useEffect(() => {
     if (!flightId) return;
@@ -24,7 +48,7 @@ export default function PassengerInfoPage() {
     FlightApi.getFlightById(Number(flightId))
       .then((data: Flight) => {
         setFlight(data)
-        console.log(data);
+        console.log("estadata llega", data);
       })
       .catch(console.error);
 
@@ -42,14 +66,6 @@ export default function PassengerInfoPage() {
   }
      
   
-    const [formData, setFormData] = useState({
-      nombres: "",
-      apellidos: "",
-      telefono: "",
-      fechaNacimiento: "",
-      email: "sophia89@tripma.com",
-      numeroConfirmacion: "123-456-7890",
-    })
 
 
 
@@ -95,7 +111,7 @@ export default function PassengerInfoPage() {
             {/* Seat Selector Section */}
             <div className="mt-12">
               <h2 className="text-2xl font-bold mb-6 text-[#605DEC]">Selector de asientos</h2>
-              <SeatSelector />
+              <SeatSelector seatNumber={flight?.aircraft.capacity} />
             </div>
 
             {/* Continue Button */}
