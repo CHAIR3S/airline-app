@@ -13,6 +13,8 @@ import { Flight } from "@/types/flight";
 import { flightDuration, formatIsoToHHMM } from "@/utils/datetime";
 import { calcularPrecioVuelo } from "@/utils/pricing";
 
+
+
 export default function DatePage() {
   const { placeId } = useParams();
 
@@ -20,13 +22,6 @@ export default function DatePage() {
   const [originPlace, setOriginPlace] = useState<Place | null>(null);
   const [dates, setDates] = useState<string[]>([]);
   const [error, setError] = useState("");
-  const [maxPrice, setMaxPrice] = useState(1000);
-  const [flights, setFlights] = useState<Flight[]>([]);
-  const [airlines, setAirlines] = useState<any[]>([]);
-
-  const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
-  const [selectedPrice, setSelectedPrice] = useState<number>(25000);
-  const [selectedDuration, setSelectedDuration] = useState<number>(24);
 
   // Efecto para obtener el lugar de destino
   useEffect(() => {
@@ -284,21 +279,10 @@ export default function DatePage() {
 
                   {/* Precio y botón de reserva */}
                   <div className="text-right">
-                    <div className="text-2xl font-bold">
-                      {calcularPrecioVuelo(
-                        flight.origin.latitude,
-                        flight.origin.longitude,
-                        flight.destination.latitude,
-                        flight.destination.longitude,
-                        flight.departureTime,
-                        0
-                      ).toLocaleString("es-MX", { style: "currency", currency: "MXN" })}
-                    </div>
-
-
-                    <button
-                      className="max-sm:w-full bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors"
-                    >
+                    <div className="text-2xl font-bold">{calcularPrecioVuelo(flight.origin.latitude, flight.origin.longitude, flight.destination.latitude, flight.destination.longitude, flight.departureTime, 0)}</div>
+                    <button className="
+                    max-sm:w-full
+                    bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors">
                       Reservar
                     </button>
                   </div>

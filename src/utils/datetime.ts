@@ -1,4 +1,16 @@
 
+
+
+export type DateItem = {
+  day: string;
+  date: string;
+  month: string;
+  year: string;
+  monthNumber: number;
+  isSelected?: boolean;
+};
+
+
 /**
  * Convierte un string ISO-8601 a "HH:mm" (24 h, con ceros delante).
  * Usa siempre la zona horaria de la propia fecha (UTC si termina en "Z").
@@ -34,4 +46,56 @@ export const flightDuration = (
   const minutes = totalMinutes % 60
 
   return `${hours}H - ${minutes}M` // ej. "1H - 15M"
+}
+
+
+export function convertDate(isoDate: string): DateItem {
+  const date = new Date(isoDate);
+
+  const day = date.getDate().toString().padStart(2, "0");
+  const monthNumber = Number((date.getMonth() + 1).toString().padStart(2, "0")); // 01-12
+  const year = date.getFullYear().toString();
+
+  const formatter = new Intl.DateTimeFormat("es-MX", {
+    weekday: "short",
+    month: "short",
+  });
+
+  const parts = formatter.formatToParts(date);
+  const weekday = parts.find((p) => p.type === "weekday")?.value || "";
+  const monthText = parts.find((p) => p.type === "month")?.value || "";
+
+  const result: DateItem = {
+      day: capitalize(weekday),    // Ej: "Jue"
+      date: day,                   // Ej: "22"
+      month: capitalize(monthText),// Ej: "May"
+      monthNumber,                // Ej: "05"
+      year,                       // Ej: "2025"
+      isSelected: false,          // Estado inicial
+    }
+
+  return result;
+}
+
+
+
+
+
+function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
+
+
+export function formatTo12Hour(datetime: string): string {
+  const date = new Date(datetime);
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // el 0 debe ser 12
+  const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+
+  return `${hours.toString().padStart(2, '0')}:${minutesStr} ${ampm}`;
 }

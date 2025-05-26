@@ -1,13 +1,47 @@
-export default function FlightInfo() {
+import { Airline, Place } from "@/types/flight"
+import { convertDate, flightDuration, formatTo12Hour } from "@/utils/datetime"
+import { distance } from "@/utils/pricing";
+
+export type FlightData = {
+  flightId: number | undefined,
+  origin: Place | undefined,
+  destination: Place | undefined,
+  departureDate: string | undefined,
+  arrivalDate: string | undefined,
+  airline: Airline| undefined,
+  weather: string | undefined
+}
+
+
+
+export default function FlightInfo({flightId, origin, destination, departureDate, arrivalDate, airline, weather}: FlightData) {
+
+  console.log("FlightInfo", flightId, origin, destination, departureDate, arrivalDate, airline, weather);
+
+  var departureFormatted
+  var arrivalFormatted
+
+
+  const km = distance(origin?.latitude || "0", origin?.longitude || "0", destination?.latitude || "0", destination?.longitude || "0")
+
+  if(departureDate || arrivalDate) {
+    departureFormatted = convertDate(departureDate || "")
+  
+    arrivalFormatted = convertDate(arrivalDate || "")
+
+    
+  }
+
+
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       {/* Cabecera con número de vuelo */}
       <div className="bg-[#605DEC] text-white p-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold">Vuelo DL1234</h2>
-          <span className="text-sm bg-white text-[#605DEC] px-2 py-1 rounded-full font-medium">En vuelo</span>
+          <h2 className="text-xl font-bold">Vuelo 000{flightId}</h2>
+          {/* <span className="text-sm bg-white text-[#605DEC] px-2 py-1 rounded-full font-medium">En vuelo</span> */}
         </div>
-        <p className="text-sm opacity-90">Nueva York (JFK) → París (CDG)</p>
+        <p className="text-sm opacity-90">{origin?.country} ({origin?.city}) → {destination?.country} ({destination?.city})</p>
       </div>
 
       {/* Información del vuelo */}
@@ -15,15 +49,15 @@ export default function FlightInfo() {
         <div className="flex justify-between mb-4">
           <div>
             <p className="text-sm text-gray-500">Salida</p>
-            <p className="text-xl font-bold">08:30 AM</p>
-            <p className="text-sm text-gray-700">24 Mayo, 2025</p>
-            <p className="text-sm text-gray-700">Terminal 4</p>
+            <p className="text-xl font-bold">{formatTo12Hour(departureDate||'')}</p>
+            <p className="text-sm text-gray-700">{`${departureFormatted?.date} ${departureFormatted?.month}, ${departureFormatted?.year}`}</p>
+            <p className="text-sm text-gray-700">{origin?.terminal}</p>
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-500">Llegada</p>
-            <p className="text-xl font-bold">10:15 PM</p>
-            <p className="text-sm text-gray-700">24 Mayo, 2025</p>
-            <p className="text-sm text-gray-700">Terminal 2E</p>
+            <p className="text-xl font-bold">{formatTo12Hour(arrivalDate || '')}</p>
+            <p className="text-sm text-gray-700">{`${arrivalFormatted?.date} ${arrivalFormatted?.month}, ${arrivalFormatted?.year}`}</p>
+            <p className="text-sm text-gray-700">{destination?.terminal}</p>
           </div>
         </div>
 
@@ -34,13 +68,13 @@ export default function FlightInfo() {
         </div>
 
         <div className="flex justify-between text-sm text-gray-700">
-          <span>Duración: 7h 45m</span>
-          <span>Distancia: 5,834 km</span>
+          <span></span>
+          <span>Distancia: {km} km</span>
         </div>
       </div>
 
       {/* Estado del vuelo */}
-      <div className="p-4 border-b border-gray-200">
+      {/* <div className="p-4 border-b border-gray-200">
         <h3 className="font-medium mb-3">Estado del vuelo</h3>
         <div className="bg-gray-100 rounded-lg p-3">
           <div className="flex justify-between mb-2">
@@ -56,7 +90,7 @@ export default function FlightInfo() {
             <p>Tiempo restante: 4h 30m</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Información meteorológica */}
       <div className="p-4 border-b border-gray-200">
@@ -87,14 +121,14 @@ export default function FlightInfo() {
             </svg>
           </div>
           <div>
-            <p className="text-xl font-bold">22°C</p>
-            <p className="text-sm text-gray-600">Soleado</p>
+            {/* <p className="text-xl font-bold">22°C</p> */}
+            <p className="text-sm text-gray-600">{weather}</p>
           </div>
         </div>
       </div>
 
       {/* Aerolínea */}
-      <div className="p-4">
+      {/* <div className="p-4">
         <h3 className="font-medium mb-3">Operado por</h3>
         <div className="flex items-center">
           <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
@@ -105,7 +139,7 @@ export default function FlightInfo() {
             <p className="text-sm text-gray-600">Airbus A350-900</p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

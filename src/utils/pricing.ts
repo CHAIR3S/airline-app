@@ -1,5 +1,3 @@
-
-
 // calcular precio segun distancia, fecha y descuento de viajero frecuente
 export function calcularPrecioVuelo(
   lat1: string,
@@ -38,10 +36,33 @@ export function calcularPrecioVuelo(
   basePrice *= fechaFactor;
 
   // Descuento (ej: 10% -> 0.9)
-  const parsedDiscount = typeof discount === "string" ? parseFloat(discount) : discount;
+  const parsedDiscount =
+    typeof discount === "string" ? parseFloat(discount) : discount;
   const finalPrice =
-    basePrice * (1 - (parsedDiscount && !isNaN(parsedDiscount) ? parsedDiscount / 100 : 0));
+    basePrice *
+    (1 - (parsedDiscount && !isNaN(parsedDiscount) ? parsedDiscount / 100 : 0));
 
   return Math.round(finalPrice);
 }
 
+export function distance(
+  lat1: string,
+  lon1: string,
+  lat2: string,
+  lon2: string
+) {
+  const R = 6371; // Radio de la Tierra en km
+  const dLat = ((Number(lat2) - Number(lat1)) * Math.PI) / 180;
+  const dLon = ((Number(lon2) - Number(lon1)) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((Number(lat1) * Math.PI) / 180) *
+      Math.cos((Number(lat2) * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distanceKm = R * c;
+
+  return distanceKm.toFixed(0) // Retorna la distancia en km con 3 decimales
+}
