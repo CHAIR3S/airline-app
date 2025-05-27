@@ -5,10 +5,10 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import StepperUI from "@/components/stepper-ui";
 import DateSelector, { DateItem, DateSelectorProps } from "@/components/ui/date-selector";
-import { Place, PlaceAPI } from "@/lib/api/place";
-import { useParams } from "next/navigation";
+import { Place, PlaceAPI } from "@/app/api/place";
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
-import { FlightApi } from "@/lib/api/flight";
+import { FlightApi } from "@/app/api/flight";
 import { Flight } from "@/types/flight";
 import { flightDuration, formatIsoToHHMM } from "@/utils/datetime";
 import { calcularPrecioVuelo } from "@/utils/pricing";
@@ -23,6 +23,8 @@ export default function DatePage() {
   const [maxPrice, setMaxPrice] = useState(1000);
   const [flights, setFlights] = useState<Flight[]>([]);
   const [airlines, setAirlines] = useState<any[]>([]);
+  const router = useRouter();
+  
 
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<number>(25000);
@@ -71,7 +73,7 @@ export default function DatePage() {
 
     FlightApi.getFlightsByDate(dates[0], originPlace.placeId, destinationPlace.placeId)
       .then((response) => {
-        console.log("✈️ Vuelos recibidos:", response);
+        console.log("Vuelos recibidos:", response);
         setFlights(response);
       })
       .catch((err) => setError(err.message));
@@ -297,7 +299,22 @@ export default function DatePage() {
 
 
                     <button
-                      className="max-sm:w-full bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors"
+
+                      onClick={() => {
+                        
+                        localStorage.setItem("price", JSON.stringify(calcularPrecioVuelo(
+                          flight.origin.latitude,
+                          flight.origin.longitude,
+                          flight.destination.latitude,
+                          flight.destination.longitude,
+                          flight.departureTime,
+                          0
+                        ).toLocaleString("es-MX", { style: "currency", currency: "MXN" })));
+
+                        router.push(`/reservation/passenger-info/${flight.flightId}`)
+                      }}
+
+                      className="cursor-pointer max-sm:w-full bg-[#003B80] text-white px-4 py-2 rounded-full mt-2 hover:bg-[#002f6c] transition-colors"
                     >
                       Reservar
                     </button>

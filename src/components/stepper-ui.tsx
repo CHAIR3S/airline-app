@@ -11,7 +11,8 @@ export default function StepperUI({ currentStep, totalSteps }: StepperUIProps) {
   const steps = [
     { id: 1, name: "Seleccionar vuelo" },
     { id: 2, name: "Datos del pasajero" },
-    { id: 3, name: "Pago y confirmación" },
+    { id: 3, name: "check-in" },
+    { id: 4, name: "Pago y confirmación" },
   ];
 
   return (

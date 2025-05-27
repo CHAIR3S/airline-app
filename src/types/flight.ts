@@ -1,12 +1,15 @@
 // src/types/flight.ts
 /** Posibles valores para el clima del lugar de origen/destino */
-export type Weather =
-  | 'SUNNY'
-  | 'CLOUDY'
-  | 'RAINY'
-  | 'STORMY'
-  | 'FOGGY'
-  | 'SNOWY'
+export enum Weather {
+  SUNNY = 'SUNNY',
+  CLOUDY = 'CLOUDY',
+  RAINY = 'RAINY',
+  STORMY = 'STORMY',
+  SNOWY = 'SNOWY',
+  WINDY = 'WINDY',
+  FOGGY = 'FOGGY',
+}
+
 
 /** Estados operativos de una aeronave */
 export type AircraftStatus = 'ACTIVE' | 'MAINTENANCE' | 'RETIRED'

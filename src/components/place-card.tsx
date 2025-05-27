@@ -1,6 +1,6 @@
 "use client";
 
-import { Place } from "@/lib/api/place";
+import { Place } from "@/app/api/place";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 

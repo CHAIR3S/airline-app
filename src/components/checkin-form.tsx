@@ -6,6 +6,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Check, AlertCircle } from "lucide-react"
 import LuggageItem from "@/components/luggage-item"
+import CheckoutForm from "./CheckoutForm"
 
 export default function CheckInForm() {
   const [luggageItems, setLuggageItems] = useState([
@@ -54,12 +55,13 @@ export default function CheckInForm() {
     )
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Mostrar mensaje de éxito con animación
-    setShowSuccessMessage(true)
-    setTimeout(() => setShowSuccessMessage(false), 3000)
-  }
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault()
+  //   // Mostrar mensaje de éxito con animación
+  //   setShowSuccessMessage(true)
+  //   console.log("Detalles del equipaje:", luggageItems)
+  //   setTimeout(() => setShowSuccessMessage(false), 3000)
+  // }
 
   const allItemsValid = luggageItems.every((item) => item.valid)
   const completionPercentage = Math.round(
@@ -67,7 +69,8 @@ export default function CheckInForm() {
   )
 
   return (
-    <form onSubmit={handleSubmit} className="p-6">
+    // <form onSubmit={handleSubmit} className="p-6">
+    <div className="p-6">
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium">Detalles del equipaje</h3>
@@ -136,17 +139,7 @@ export default function CheckInForm() {
 
       {/* Botón de envío */}
       <div className="flex justify-end">
-        <motion.button
-          type="submit"
-          className={`px-6 py-3 rounded-lg font-medium text-white ${
-            allItemsValid ? "bg-[#605DEC] hover:bg-[#4F4ADB]" : "bg-gray-400 cursor-not-allowed"
-          }`}
-          disabled={!allItemsValid}
-          whileHover={allItemsValid ? { scale: 1.03 } : {}}
-          whileTap={allItemsValid ? { scale: 0.97 } : {}}
-        >
-          Completar Check-in
-        </motion.button>
+          <CheckoutForm money={999} />
       </div>
 
       {/* Mensaje de éxito */}
@@ -163,6 +156,6 @@ export default function CheckInForm() {
           </motion.div>
         )}
       </AnimatePresence>
-    </form>
+    </div>
   )
 }

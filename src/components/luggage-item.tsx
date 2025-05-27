@@ -19,6 +19,73 @@ interface LuggageItemProps {
   removeLuggageItem: (id: number) => void
 }
 
+
+
+
+
+
+
+  //calcular cargos extras
+  type Luggage = {
+    type: "cabina" | "documentada";
+    width: number;
+    height: number;
+    depth: number;
+    weight: number;
+  };
+
+  function calcularCargoExtra(maleta: Luggage): number {
+    const reglas = {
+      cabina: { maxW: 55, maxH: 40, maxD: 20, maxP: 10, base: 0, extraKg: 20 },
+      documentada: {
+        maxW: 80,
+        maxH: 50,
+        maxD: 30,
+        maxP: 23,
+        base: 300,
+        extraKg: 15,
+      },
+    };
+
+    const r = reglas[maleta.type];
+
+    let extra = r.base;
+
+    const { width, height, depth, weight } = maleta;
+
+    const sizeExceeded = width > r.maxW || height > r.maxH || depth > r.maxD;
+
+    const pesoExtra = weight > r.maxP ? weight - r.maxP : 0;
+
+    if (sizeExceeded) {
+      extra += 100; // Penalización por tamaño excedido
+    }
+
+    if (pesoExtra > 0) {
+      extra += pesoExtra * r.extraKg;
+    }
+
+    return extra;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 export default function LuggageItem({ item, toggleExpand, updateLuggageItem, removeLuggageItem }: LuggageItemProps) {
   const handleInputChange = (field: string, value: string) => {
     updateLuggageItem(item.id, field, value)
@@ -60,6 +127,22 @@ export default function LuggageItem({ item, toggleExpand, updateLuggageItem, rem
           </div>
         </div>
         <div className="flex items-center">
+          {isComplete && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full mr-3"
+            >
+              Cargo Extra: ${calcularCargoExtra({
+                type: item.type === "Maleta de cabina" ? "cabina" : "documentada",
+                width: parseFloat(item.width),
+                height: parseFloat(item.height),
+                depth: parseFloat(item.depth),
+                weight: parseFloat(item.weight),
+              })}
+            </motion.div>
+          )}
+          
           {isComplete && (
             <motion.div
               initial={{ scale: 0 }}

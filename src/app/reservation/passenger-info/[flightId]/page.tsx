@@ -1,31 +1,38 @@
-'use client'
+"use client";
 
-import Link from "next/link"
-import StepperUI from "@/components/stepper-ui"
-import PassengerForm from "@/components/passenger-form"
-import FlightInfo, { FlightData } from "@/components/flight-info"
-import SeatSelector from "@/components/seat-selector"
-import { ArrowLeft } from "lucide-react"
-import { useEffect, useState } from "react"
-import { FlightApi } from "@/lib/api/flight"
-import { useParams } from "next/navigation"
-import { Flight } from "@/types/flight"
+import Link from "next/link";
+import StepperUI from "@/components/stepper-ui";
+import PassengerForm from "@/components/passenger-form";
+import FlightInfo, { FlightData } from "@/components/flight-info";
+import SeatSelector from "@/components/seat-selector";
+import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FlightApi } from "@/app/api/flight";
+import { useParams, useRouter } from "next/navigation";
+import { Flight } from "@/types/flight";
+import { convertDate } from "@/utils/datetime";
+
+function generarNumeroConfirmacion(): string {
+  const bloque = () => Math.floor(100 + Math.random() * 900); // 3 dígitos
+  return `${bloque()}-${bloque()}-${bloque()}`;
+}
 
 export default function PassengerInfoPage() {
-
   const { flightId } = useParams();
+  const router = useRouter();
 
   const [flight, setFlight] = useState<Flight>();
 
-  
   const [formData, setFormData] = useState({
     nombres: "",
     apellidos: "",
     telefono: "",
     fechaNacimiento: "",
     email: "sophia89@tripma.com",
-    numeroConfirmacion: "123-456-7890",
-  })
+    numeroConfirmacion: generarNumeroConfirmacion(),
+  });
+
+  const flightIdSecure = flightId ? Number(flightId) : null;
 
   // guardar formulario en localstorage
   useEffect(() => {
@@ -34,12 +41,10 @@ export default function PassengerInfoPage() {
     console.log("form data en local storage", formData);
   }, [formData]);
 
-
   //detectar cambios en el formulario
-  const handleChange = (e:any) => {
+  const handleChange = (e: any) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
 
   // obtener el avion (desde el parámetro flightId de la URL)
   useEffect(() => {
@@ -47,31 +52,40 @@ export default function PassengerInfoPage() {
 
     FlightApi.getFlightById(Number(flightId))
       .then((data: Flight) => {
-        setFlight(data)
+        setFlight(data);
         console.log("estadata llega", data);
       })
       .catch(console.error);
-
   }, [flightId]);
-      
 
-  const properties: FlightData  = {
+  const properties: FlightData = {
     flightId: flight?.flightId,
     origin: flight?.origin,
     destination: flight?.destination,
     departureDate: flight?.arrivalTime,
     arrivalDate: flight?.arrivalTime,
     airline: flight?.airline,
-    weather: flight?.destination.weather
-  }
-     
+    weather: flight?.destination.weather,
+  };
+
+  const isFormComplete = () => {
+    return (
+      formData.nombres.trim() !== "" &&
+      formData.apellidos.trim() !== "" &&
+      formData.telefono.trim() !== "" &&
+      formData.fechaNacimiento.trim() !== "" &&
+      formData.email.trim() !== "" &&
+      formData.numeroConfirmacion.trim() !== ""
+    );
+  };
+
+  // if(flight?.arrivalTime ==)
+  //   const departureFormatted = convertDate(flight?.arrivalTime || "");
+
   
-
-
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-            {/* Search Summary */}
+      {/* Search Summary */}
       <div className="bg-white border-b border-gray-200 py-4">
         <div className="container mx-auto px-4">
           <div className="flex items-center text-sm text-gray-600">
@@ -82,7 +96,8 @@ export default function PassengerInfoPage() {
             <div className="mx-4 text-gray-300">|</div>
             <div>
               <span className="font-medium">{flight?.origin.name}</span> →{" "}
-              <span className="font-medium">{flight?.destination.name}</span> · 24 mayo · 1 adulto
+              <span className="font-medium">{flight?.destination.name}</span> ·
+              mayo · 1 adulto
             </div>
           </div>
         </div>
@@ -91,7 +106,7 @@ export default function PassengerInfoPage() {
       {/* Stepper UI */}
       <div className="border-b border-gray-200 bg-white">
         <div className="container mx-auto px-4 py-6">
-          <StepperUI currentStep={2} totalSteps={3} />
+          <StepperUI currentStep={2} totalSteps={4} />
         </div>
       </div>
 
@@ -100,33 +115,52 @@ export default function PassengerInfoPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Passenger Information Form */}
           <div className="lg:col-span-2">
-            <h1 className="text-2xl font-bold mb-6 text-[#605DEC]">Información del pasajero</h1>
+            <h1 className="text-2xl font-bold mb-6 text-[#605DEC]">
+              Información del pasajero
+            </h1>
             <p className="text-gray-600 mb-6">
-              Ingrese la información requerida, y asegúrese que coincida con la que está contenida en el ID del
-              pasaporte.
+              Ingrese la información requerida, y asegúrese que coincida con la
+              que está contenida en el ID del pasaporte.
             </p>
-            
+
             <PassengerForm formData={formData} setFormData={setFormData} />
 
             {/* Seat Selector Section */}
             <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6 text-[#605DEC]">Selector de asientos</h2>
+              <h2 className="text-2xl font-bold mb-6 text-[#605DEC]">
+                Selector de asientos
+              </h2>
               <SeatSelector seatNumber={flight?.aircraft.capacity} />
             </div>
 
             {/* Continue Button */}
             <div className="mt-8 flex justify-center">
               <button
-                onClick={() => console.log(formData)}
-                className="bg-[#605DEC] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#4F4ADB] transition-colors">
-                Guardar y continuar con el pago
+                onClick={() => {
+                  if (!flight?.flightId) return null;
+
+                  localStorage.setItem('flight', JSON.stringify(flight));
+                  
+                  router.push(`/reservation/check-in/${flight.flightId}`);
+                  
+                }}
+                disabled={!isFormComplete()}
+                className={`cursor-pointer px-8 py-3 rounded-lg font-medium transition-colors ${
+                  isFormComplete()
+                    ? "bg-[#605DEC] text-white hover:bg-[#4F4ADB]"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+              >
+                Guardar y continuar
               </button>
             </div>
           </div>
 
           {/* Flight Information Sidebar */}
           <div className="lg:col-span-1">
-            <h2 className="text-2xl font-bold mb-6 text-[#605DEC]">Información del vuelo</h2>
+            <h2 className="text-2xl font-bold mb-6 text-[#605DEC]">
+              Información del vuelo
+            </h2>
             <FlightInfo {...properties} />
           </div>
         </div>
@@ -166,7 +200,14 @@ export default function PassengerInfoPage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <rect
+                      x="2"
+                      y="2"
+                      width="20"
+                      height="20"
+                      rx="5"
+                      ry="5"
+                    ></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
                   </svg>
@@ -193,22 +234,34 @@ export default function PassengerInfoPage() {
               <h3 className="text-lg font-medium text-gray-700 mb-4">About</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-500 hover:text-[#605DEC] text-sm">
+                  <a
+                    href="#"
+                    className="text-gray-500 hover:text-[#605DEC] text-sm"
+                  >
                     About Tripma
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-500 hover:text-[#605DEC] text-sm">
+                  <a
+                    href="#"
+                    className="text-gray-500 hover:text-[#605DEC] text-sm"
+                  >
                     How it works
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-500 hover:text-[#605DEC] text-sm">
+                  <a
+                    href="#"
+                    className="text-gray-500 hover:text-[#605DEC] text-sm"
+                  >
                     Press
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-500 hover:text-[#605DEC] text-sm">
+                  <a
+                    href="#"
+                    className="text-gray-500 hover:text-[#605DEC] text-sm"
+                  >
                     Blog
                   </a>
                 </li>
@@ -216,20 +269,31 @@ export default function PassengerInfoPage() {
             </div>
 
             <div>
-              <h3 className="text-lg font-medium text-gray-700 mb-4">Support</h3>
+              <h3 className="text-lg font-medium text-gray-700 mb-4">
+                Support
+              </h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="text-gray-500 hover:text-[#605DEC] text-sm">
+                  <a
+                    href="#"
+                    className="text-gray-500 hover:text-[#605DEC] text-sm"
+                  >
                     Help Center
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-500 hover:text-[#605DEC] text-sm">
+                  <a
+                    href="#"
+                    className="text-gray-500 hover:text-[#605DEC] text-sm"
+                  >
                     Contact us
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-500 hover:text-[#605DEC] text-sm">
+                  <a
+                    href="#"
+                    className="text-gray-500 hover:text-[#605DEC] text-sm"
+                  >
                     Terms of service
                   </a>
                 </li>
@@ -237,9 +301,11 @@ export default function PassengerInfoPage() {
             </div>
           </div>
 
-          <div className="mt-12 text-center text-gray-500 text-sm">© 2025 Odisea incorporated</div>
+          <div className="mt-12 text-center text-gray-500 text-sm">
+            © 2025 Odisea incorporated
+          </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }

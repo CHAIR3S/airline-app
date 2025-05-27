@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Info } from "lucide-react";
-import { login } from "@/lib/api/auth";
+import { login } from "@/app/api/auth";
 
 type SeatStatus = "available" | "unavailable" | "selected" | "premium";
 type ViewMode = "sections" | "seats";

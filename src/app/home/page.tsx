@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import HotDeal from "./HotDeal";
 import { useEffect, useState } from "react";
-import { Place, PlaceAPI } from "@/lib/api/place";
+import { Place, PlaceAPI } from "@/app/api/place";
 import PlaceCard from "@/components/place-card";
 
 export default function Home() {

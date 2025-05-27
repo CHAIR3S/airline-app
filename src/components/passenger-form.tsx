@@ -102,20 +102,24 @@ export default function PassengerForm({
           />
         </div>
 
-        <div>
-          <label htmlFor="numeroConfirmacion" className="block text-sm font-medium text-gray-700 mb-1">
-            Número de confirmación
-          </label>
-          <input
-            type="text"
-            id="numeroConfirmacion"
-            name="numeroConfirmacion"
-            value={formData.numeroConfirmacion}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-[#605DEC] focus:border-[#605DEC] transition-all duration-200"
-            placeholder="Número de confirmación"
-          />
-        </div>
+
+      <div>
+        <label
+          htmlFor="numeroConfirmacion"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Número de confirmación
+        </label>
+        <input
+          type="text"
+          id="numeroConfirmacion"
+          name="numeroConfirmacion"
+          value={formData.numeroConfirmacion}
+          readOnly
+          className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed focus:outline-none"
+          placeholder="Número de confirmación"
+        />
+      </div>
 
       </div>
 

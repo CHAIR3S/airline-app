@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { date } from "zod"
-import { FlightApi } from "@/lib/api/flight"
+import { FlightApi } from "@/app/api/flight"
 import { set } from "react-hook-form"
 
 
