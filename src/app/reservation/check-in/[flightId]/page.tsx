@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 export default function CheckInPage() {
 
+
   const [flight, setFlight] = useState<Flight>();
 
 
@@ -213,6 +214,7 @@ export default function CheckInPage() {
             </div>
 
             <CheckInForm />
+
           </div>
         </div>
       </main>

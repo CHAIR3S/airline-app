@@ -2,13 +2,18 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Check, AlertCircle } from "lucide-react"
 import LuggageItem from "@/components/luggage-item"
 import CheckoutForm from "./CheckoutForm"
+import { calcularCargoExtra } from "@/utils/luggage"
+import { parseCurrencyToCents } from "@/utils/pricing"
 
 export default function CheckInForm() {
+  const [totalLuggageCost, setTotalLuggageCost] = useState(0);
+  
+
   const [luggageItems, setLuggageItems] = useState([
     { id: 1, type: "Maleta de cabina", expanded: true, width: "", height: "", depth: "", weight: "", valid: false },
     { id: 2, type: "Maleta documentada", expanded: false, width: "", height: "", depth: "", weight: "", valid: false },
@@ -16,44 +21,99 @@ export default function CheckInForm() {
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
-  const addLuggageItem = () => {
-    const newId = Math.max(0, ...luggageItems.map((item) => item.id)) + 1
-    setLuggageItems([
-      ...luggageItems,
-      {
-        id: newId,
-        type: "Maleta documentada",
-        expanded: true,
-        width: "",
-        height: "",
-        depth: "",
-        weight: "",
-        valid: false,
-      },
-    ])
-  }
 
-  const removeLuggageItem = (id: number) => {
-    setLuggageItems(luggageItems.filter((item) => item.id !== id))
-  }
+  
+  const [priceBase, setPriceBase] = useState(0); // en centavos
+  const [cargoExtra, setCargoExtra] = useState(0); // en centavos
+
+  useEffect(() => {
+    const priceStorage = localStorage.getItem("price");
+    const base = parseCurrencyToCents(priceStorage ?? "0");
+    setPriceBase(base);
+  }, []);
+
+  useEffect(() => {
+    const total = luggageItems.reduce((acc, item) => {
+      if (item.valid) {
+        acc += calcularCargoExtra({
+          type: item.type === "Maleta de cabina" ? "cabina" : "documentada",
+          width: parseFloat(item.width),
+          height: parseFloat(item.height),
+          depth: parseFloat(item.depth),
+          weight: parseFloat(item.weight),
+        });
+      }
+      return acc;
+    }, 0);
+    setCargoExtra(total * 100); // convierte a centavos también
+  }, [luggageItems]);
+
+  const totalAPagar = priceBase + cargoExtra;
+
+const addLuggageItem = () => {
+  const newId = Math.max(0, ...luggageItems.map((item) => item.id)) + 1;
+  const updated = [
+    ...luggageItems,
+    {
+      id: newId,
+      type: "Maleta documentada",
+      expanded: true,
+      width: "",
+      height: "",
+      depth: "",
+      weight: "",
+      valid: false,
+    },
+  ];
+  setLuggageItems(updated);
+  calcularTotalEquipaje(updated);
+};
+
+
+const removeLuggageItem = (id: number) => {
+  const updated = luggageItems.filter((item) => item.id !== id);
+  setLuggageItems(updated);
+  calcularTotalEquipaje(updated);
+};
 
   const toggleExpand = (id: number) => {
     setLuggageItems(luggageItems.map((item) => (item.id === id ? { ...item, expanded: !item.expanded } : item)))
   }
 
-  const updateLuggageItem = (id: number, field: string, value: string) => {
-    setLuggageItems(
-      luggageItems.map((item) => {
-        if (item.id === id) {
-          const updatedItem = { ...item, [field]: value }
-          // Validar si todos los campos están completos
-          updatedItem.valid = !!updatedItem.width && !!updatedItem.height && !!updatedItem.depth && !!updatedItem.weight
-          return updatedItem
-        }
-        return item
-      }),
-    )
-  }
+const updateLuggageItem = (id: number, field: string, value: string) => {
+  const updated = luggageItems.map((item) => {
+    if (item.id === id) {
+      const updatedItem = { ...item, [field]: value };
+      updatedItem.valid =
+        !!updatedItem.width && !!updatedItem.height && !!updatedItem.depth && !!updatedItem.weight;
+      return updatedItem;
+    }
+    return item;
+  });
+
+  setLuggageItems(updated);
+  calcularTotalEquipaje(updated);
+};
+
+
+  const calcularTotalEquipaje = (items = luggageItems) => {
+    const total = items.reduce((acc, item) => {
+      if (item.valid) {
+        acc += calcularCargoExtra({
+          type: item.type === "Maleta de cabina" ? "cabina" : "documentada",
+          width: parseFloat(item.width),
+          height: parseFloat(item.height),
+          depth: parseFloat(item.depth),
+          weight: parseFloat(item.weight),
+        });
+      }
+      return acc;
+    }, 0);
+
+    setTotalLuggageCost(total); 
+  };
+
+
 
   // const handleSubmit = (e: React.FormEvent) => {
   //   e.preventDefault()
@@ -139,7 +199,8 @@ export default function CheckInForm() {
 
       {/* Botón de envío */}
       <div className="flex justify-end">
-          <CheckoutForm money={999} />
+          <CheckoutForm money={totalAPagar / 100} />
+
       </div>
 
       {/* Mensaje de éxito */}

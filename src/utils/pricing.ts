@@ -66,3 +66,20 @@ export function distance(
 
   return distanceKm.toFixed(0) // Retorna la distancia en km con 3 decimales
 }
+
+
+
+export function parseCurrencyToCents(input: string): number {
+  const cleaned = input
+    .replace(/[^\d.-]+/g, "") // elimina cualquier cosa que no sea número, punto o guión
+    .trim();
+
+  const parsed = parseFloat(cleaned);
+
+  if (isNaN(parsed)) {
+    console.error("Error: no se pudo convertir a número:", cleaned);
+    return 0;
+  }
+
+  return Math.round(parsed * 100);
+}
