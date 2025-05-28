@@ -66,7 +66,7 @@ export default function SearchResultsPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <main className="flex-1 container mx-auto px-4 py-20">
+      <main className="flex-1 container mx-auto px-4 py-5">
         <UserDashboard userName="Naved Ansari" stats={userStats} setSearchQuery={setSearchQuery} />
 
         <div className="flex justify-between items-center mb-6">

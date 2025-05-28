@@ -17,7 +17,7 @@ export default function UserDashboard({ userName, stats, setSearchQuery }: UserD
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div className="flex items-center mb-4 md:mb-0">
           <span className="text-2xl mr-2">👋</span>
-          <h2 className="text-xl font-bold">Hello! Mr. {userName}</h2>
+          <h2 className="text-xl font-bold">Hola de nuevo, señor {userName}</h2>
         </div>
         <div className="relative w-full md:w-auto">
           <input

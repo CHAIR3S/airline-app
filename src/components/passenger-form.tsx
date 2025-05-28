@@ -103,7 +103,7 @@ export default function PassengerForm({
         </div>
 
 
-      <div>
+      {/* <div>
         <label
           htmlFor="numeroConfirmacion"
           className="block text-sm font-medium text-gray-700 mb-1"
@@ -119,7 +119,7 @@ export default function PassengerForm({
           className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed focus:outline-none"
           placeholder="Número de confirmación"
         />
-      </div>
+      </div> */}
 
       </div>
 
