@@ -19,8 +19,8 @@ export type FlightStatus =
   | 'SCHEDULED'
   | 'DELAYED'
   | 'CANCELLED'
-  | 'IN_AIR'
-  | 'LANDED'
+  | 'DEPARTED'
+  | 'ARRIVED'
 
 /** Buffer serializado que recibes desde tu API */
 export interface BinaryPhoto {
@@ -47,6 +47,7 @@ export interface Place {
   discount: string
   latitude: string // si prefieres, cámbialo a number
   longitude: string // idem
+  photoBase64: string
 }
 
 export interface Aircraft {

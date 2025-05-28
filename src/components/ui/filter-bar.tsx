@@ -3,16 +3,17 @@
 import type React from "react"
 import { useState } from "react"
 import { ChevronDown } from "lucide-react"
+import { Filters } from "@/app/dashboard/page"
 
 interface FilterOption {
   label: string
   icon: React.ReactNode
 }
 
-interface FilterBarProps {
-  filters: any
-  setFilters: (value: any) => void
-}
+type FilterBarProps = {
+  filters: Filters;
+  setFilters: (filters: Filters) => void;
+};
 
 export default function FilterBar({ filters, setFilters }: FilterBarProps) {
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
@@ -32,28 +33,47 @@ export default function FilterBar({ filters, setFilters }: FilterBarProps) {
     },
   }
 
-  const toggleFilter = (filter: string, value: string | number) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      [filter]: prev[filter] === value ? null : value,
-    }))
-    setActiveFilter(activeFilter === filter ? null : filter)
-  }
-
+  
   return (
-    <div className="flex space-x-2">
-      {Object.entries(filtersList).map(([key, { label, icon }]) => (
-        <button
-          key={key}
-          onClick={() => toggleFilter(key, label)}
-          className={`flex items-center px-4 py-2 rounded-md border ${
-            filters[key] ? "border-[#605DEC] text-[#605DEC]" : "border-gray-300 text-gray-700 hover:border-gray-400"
-          }`}
-        >
-          {label}
-          {icon}
-        </button>
-      ))}
+    <div className="flex gap-4">
+      <input
+        type="text"
+        placeholder="Aerolínea"
+        onChange={(e) =>
+          setFilters({ ...filters, airlineName: e.target.value })
+        }
+        className="border rounded px-3 py-1"
+      />
+
+      <input
+        type="text"
+        placeholder="Origen"
+        onChange={(e) =>
+          setFilters({ ...filters, originName: e.target.value })
+        }
+        className="border rounded px-3 py-1"
+      />
+
+      <input
+        type="text"
+        placeholder="Destino"
+        onChange={(e) =>
+          setFilters({ ...filters, destinationName: e.target.value })
+        }
+        className="border rounded px-3 py-1"
+      />
+
+      <select
+        onChange={(e) =>
+          setFilters({ ...filters, status: e.target.value || undefined })
+        }
+        className="border rounded px-3 py-1"
+      >
+        <option value="">Todos</option>
+        <option value="SCHEDULED">Scheduled</option>
+        <option value="DEPARTED">Departed</option>
+        <option value="DELAYED">Delayed</option>
+      </select>
     </div>
-  )
+  );
 }

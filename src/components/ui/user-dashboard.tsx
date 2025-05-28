@@ -1,4 +1,6 @@
+import { FlightApi } from "@/app/api/flight"
 import { Search, Calendar, CheckCircle, XCircle, DollarSign } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface UserDashboardProps {
   userName: string
@@ -12,12 +14,22 @@ interface UserDashboardProps {
 }
 
 export default function UserDashboard({ userName, stats, setSearchQuery }: UserDashboardProps) {
+
+  const [statistics, setStatistics] = useState<any>();
+
+  useEffect(() => {
+    FlightApi.getStats().then((result) => {setStatistics(result)})
+  }, [])
+
+
+  console.log(statistics)
+
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div className="flex items-center mb-4 md:mb-0">
           <span className="text-2xl mr-2">👋</span>
-          <h2 className="text-xl font-bold">Hola de nuevo, señor {userName}</h2>
+          <h2 className="text-xl font-bold">Hola de nuevo {userName}</h2>
         </div>
         <div className="relative w-full md:w-auto">
           <input
@@ -34,8 +46,8 @@ export default function UserDashboard({ userName, stats, setSearchQuery }: UserD
         <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-4xl font-bold">{stats.booked}</h3>
-              <p className="text-gray-600">Flights Booked</p>
+              <h3 className="text-4xl font-bold">{statistics?.statusCounts?.SCHEDULED}</h3>
+              <p className="text-gray-600">Vuelos programados</p>
             </div>
             <div className="bg-blue-100 p-3 rounded-full">
               <Calendar className="text-blue-700" size={24} />
@@ -46,8 +58,8 @@ export default function UserDashboard({ userName, stats, setSearchQuery }: UserD
         <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-4xl font-bold">{stats.completed}</h3>
-              <p className="text-gray-600">Flights Done</p>
+              <h3 className="text-4xl font-bold">{statistics?.statusCounts?.ARRIVED}</h3>
+              <p className="text-gray-600">Vuelos completados</p>
             </div>
             <div className="bg-green-100 p-3 rounded-full">
               <CheckCircle className="text-green-500" size={24} />
@@ -58,8 +70,8 @@ export default function UserDashboard({ userName, stats, setSearchQuery }: UserD
         <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-4xl font-bold">{stats.cancelled}</h3>
-              <p className="text-gray-600">Flights Cancelled</p>
+              <h3 className="text-4xl font-bold">{statistics?.statusCounts?.CANCELLED}</h3>
+              <p className="text-gray-600">Vuelos cancelados</p>
             </div>
             <div className="bg-red-100 p-3 rounded-full">
               <XCircle className="text-red-500" size={24} />
@@ -70,7 +82,7 @@ export default function UserDashboard({ userName, stats, setSearchQuery }: UserD
         <div className="bg-white rounded-lg p-4 border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-4xl font-bold">${stats.totalSpent.toLocaleString()}</h3>
+              <h3 className="text-4xl font-bold">${statistics?.totalAmount}</h3>
               <p className="text-gray-600">Total Spends</p>
             </div>
             <div className="bg-amber-100 p-3 rounded-full">

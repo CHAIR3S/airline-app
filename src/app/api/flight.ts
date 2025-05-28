@@ -16,7 +16,7 @@ export class FlightApi {
 
 
   static async getAllFlightsActive() {
-    const res = await fetch(`${API_BASE}/flight-active`, {
+    const res = await fetch(`${API_BASE}/flight/active`, {
       cache: "no-store",
     });
 
@@ -47,6 +47,19 @@ export class FlightApi {
 
     if (!res.ok) {
       throw new Error("No se pudieron obtener las fechas de vuelo.");
+    }
+
+    return res.json(); 
+  }
+
+
+  static async getStats() {
+    const res = await fetch(`${API_BASE}/flight/count-by-status`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error("No se pudo obtener las estadisticas.");
     }
 
     return res.json(); 
