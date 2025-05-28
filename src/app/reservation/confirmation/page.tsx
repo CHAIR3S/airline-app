@@ -10,12 +10,28 @@ import { useEffect, useState } from "react"
 import { convertDate, DateItem, flightDuration, formatTo12Hour } from "@/utils/datetime"
 import { Flight } from "@/types/flight"
 
+ export enum BaggageStatus {
+    CHECKED_IN = 'CHECKED_IN',
+    IN_TRANSIT = 'IN_TRANSIT',
+    DELIVERED = 'DELIVERED',
+    LOST = 'LOST',
+  }
+
+
+  export enum ReservationStatus {
+    RESERVED = 'RESERVED',
+    CANCELLED = 'CANCELLED',
+    COMPLETED = 'COMPLETED',
+  }
+  
+
 export default function ConfirmationPage() {
 
   const [flight, setFlight] = useState<Flight>()
   const [departureDate, setDepartureDate] = useState<DateItem>()
   const [price, setPrice] = useState<string>("")
   const [selectedSeat, setSelectedSeat] = useState<string>("")
+  const [baggageCost, setBaggageCost] = useState<number>(0);
   
   useEffect(() => {
     const storage = localStorage.getItem('flight');
@@ -30,6 +46,157 @@ export default function ConfirmationPage() {
     const dates = convertDate(flight?.departureTime || new Date().toISOString());
     setDepartureDate(dates);
   }, [])
+
+
+
+
+
+
+
+
+
+useEffect(() => {
+  const flightStorage = localStorage.getItem('flight');
+  const pricing = localStorage.getItem('price');
+  const seat = localStorage.getItem('selected-seat');
+  const classSeat = localStorage.getItem('selected-seat-section') || "ECONOMY"; 
+  const luggage = localStorage.getItem('luggageItems');
+  const clientId = parseInt(localStorage.getItem('clientId') || "1");
+  const codeStorage = localStorage.getItem('passenger-form') || Math.random().toString(36).slice(2, 12).toUpperCase();
+  const code = codeStorage.toUpperCase();
+
+  const flight = JSON.parse(flightStorage || '{}');
+  const price = parseFloat((pricing!.slice(2, -1)).replace(/,/g, "") );
+  const luggageItems = JSON.parse(luggage || "[]");
+  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+
+  if(luggageItems.length > 0) {
+
+    const baggageCost = luggageItems.reduce(
+      (acc: number, item: any) => acc + (item.extraAmount || 0),
+      0
+    );
+
+    setBaggageCost(baggageCost);
+
+  }
+
+  const initFlow = async () => {
+    try {
+      // 1. Crear asiento (puedes omitir si ya se creó antes)
+      const seatResponse = await fetch(`${API}/seat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          seatNumber: seat || "A1",
+          class: (classSeat == "first-class" ? "FIRST" :  "ECONOMY"),
+          available: false,
+          flightId: flight.flightId,
+        }),
+      });
+      const createdSeat = await seatResponse.json();
+
+      // 2. Crear reservación
+      const reservationResponse = await fetch(`${API}/reservation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId,
+          flightId: flight.flightId,
+          seatId: createdSeat.seatId,
+          status: ReservationStatus.RESERVED,
+          reservationDate: new Date().toISOString(),
+        }),
+      });
+      const reservation = await reservationResponse.json();
+
+      // 3. Crear equipaje (en paralelo)
+      await Promise.all(luggageItems.map((item: any) =>
+        fetch(`${API}/baggage `, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            reservationId: reservation.reservationId,
+            weight: Number(item.weight),
+            description: item.type,
+            extraCharge: item.extraAmount,
+            status: BaggageStatus.CHECKED_IN,
+          }),
+        })
+      ));
+
+      // 4. Crear pago
+      await fetch(`${API}/payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reservationId: reservation.reservationId,
+          amount: price + Number(baggageCost) + (localStorage.getItem('selected-seat-section') === "first-class" ? 1000 : 0), // Agregar costo de primera clase si aplica
+          paymentMethod: 'CREDIT',
+          status: 'PAID',
+        }),
+      });
+
+      // 5. Hacer check-in
+      await fetch(`${API}/checkin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reservationId: reservation.reservationId,
+          checkinDate: new Date().toISOString(),
+        }),
+      });
+
+      // 6. Crear boleto
+      await fetch(`${API}/ticket`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reservationId: reservation.reservationId,
+          barcode: Math.random().toString(36).slice(2, 12).toUpperCase(),
+        }),
+      });
+
+      console.log('Todos los registros fueron creados correctamente');
+
+    } catch (err) {
+      console.error("Error en el flujo de creación de datos:", err);
+    }
+    };
+
+    initFlow();
+
+    // Actualizar estados para render
+    setFlight(flight);
+    setPrice(pricing || "$0");
+    setSelectedSeat(seat || "N/A");
+    setDepartureDate(convertDate(flight?.departureTime || new Date().toISOString()));
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
