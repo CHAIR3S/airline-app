@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Plus, Check, AlertCircle } from "lucide-react"
 import LuggageItem from "@/components/luggage-item"
@@ -15,8 +15,8 @@ export default function CheckInForm() {
   
 
   const [luggageItems, setLuggageItems] = useState([
-    { id: 1, type: "Maleta de cabina", expanded: true, width: "", height: "", depth: "", weight: "", valid: false },
-    { id: 2, type: "Maleta documentada", expanded: false, width: "", height: "", depth: "", weight: "", valid: false },
+    { id: 1, type: "Maleta de cabina", expanded: true, width: "", height: "", depth: "", weight: "", valid: false, extraAmount: 0 },
+    { id: 2, type: "Maleta documentada", expanded: false, width: "", height: "", depth: "", weight: "", valid: false, extraAmount: 0 },
   ])
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
@@ -25,11 +25,18 @@ export default function CheckInForm() {
   
   const [priceBase, setPriceBase] = useState(0); // en centavos
   const [cargoExtra, setCargoExtra] = useState(0); // en centavos
+  const [primeraClase, setPrimeraClase] = useState(false); // Estado para primera clase
 
   useEffect(() => {
     const priceStorage = localStorage.getItem("price");
     const base = parseCurrencyToCents(priceStorage ?? "0");
     setPriceBase(base);
+  }, []);
+
+  useEffect(() => {
+    const primeraClaseStorage = localStorage.getItem("selected-seat-section");
+    console.log("Primera clase desde localStorage:", primeraClaseStorage);
+    setPrimeraClase(primeraClaseStorage == "first-class");
   }, []);
 
   useEffect(() => {
@@ -41,6 +48,7 @@ export default function CheckInForm() {
           height: parseFloat(item.height),
           depth: parseFloat(item.depth),
           weight: parseFloat(item.weight),
+          extraAmount: item.extraAmount || 0,
         });
       }
       return acc;
@@ -48,7 +56,7 @@ export default function CheckInForm() {
     setCargoExtra(total * 100); // convierte a centavos también
   }, [luggageItems]);
 
-  const totalAPagar = priceBase + cargoExtra;
+  const totalAPagar = priceBase + cargoExtra + (primeraClase ? Number(process.env.NEXT_PUBLIC_PRECIO_PRIMERA_CLASE!) * 100 : 0); // Agrega 1000 centavos si es primera clase
 
 const addLuggageItem = () => {
   const newId = Math.max(0, ...luggageItems.map((item) => item.id)) + 1;
@@ -63,6 +71,7 @@ const addLuggageItem = () => {
       depth: "",
       weight: "",
       valid: false,
+      extraAmount: 0, 
     },
   ];
   setLuggageItems(updated);
@@ -97,21 +106,32 @@ const updateLuggageItem = (id: number, field: string, value: string) => {
 
 
   const calcularTotalEquipaje = (items = luggageItems) => {
-    const total = items.reduce((acc, item) => {
-      if (item.valid) {
-        acc += calcularCargoExtra({
-          type: item.type === "Maleta de cabina" ? "cabina" : "documentada",
-          width: parseFloat(item.width),
-          height: parseFloat(item.height),
-          depth: parseFloat(item.depth),
-          weight: parseFloat(item.weight),
-        });
-      }
-      return acc;
-    }, 0);
+    let total = 0;
 
-    setTotalLuggageCost(total); 
+    const updatedItems = items.map((item) => {
+      if (!item.valid) return item;
+
+      const extra = calcularCargoExtra({
+        type: item.type === "Maleta de cabina" ? "cabina" : "documentada",
+        width: parseFloat(item.width),
+        height: parseFloat(item.height),
+        depth: parseFloat(item.depth),
+        weight: parseFloat(item.weight),
+      });
+
+      total += extra;
+
+      return {
+        ...item,
+        extraAmount: extra,
+      };
+    });
+
+    setLuggageItems(updatedItems);
+    setTotalLuggageCost(total);
+    localStorage.setItem("luggageItems", JSON.stringify(updatedItems));
   };
+
 
 
 

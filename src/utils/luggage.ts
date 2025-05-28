@@ -5,6 +5,7 @@ export type Luggage = {
   height: number;
   depth: number;
   weight: number;
+  extraAmount?: number; 
 };
 
 export function calcularCargoExtra(maleta: Luggage): number {

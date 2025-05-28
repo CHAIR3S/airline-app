@@ -26,7 +26,8 @@ const clases: Clase[] = [
   { tipo: "economy", porcentaje: 80 },
 ];
 
-function saveLocalStorage(seatSelected: string) {
+function saveLocalStorage(seatSelected: string, section: SectionType) {
+  localStorage.setItem("selected-seat-section", section);
   localStorage.setItem("selected-seat", seatSelected);
 }
 
@@ -177,7 +178,7 @@ export default function SeatSelector({
     setShowAlert(true);
   };
 
-  const handleSeatClick = (seatId: string, status: SeatStatus) => {
+  const handleSeatClick = (seatId: string, status: SeatStatus, section: SectionType) => {
     if (status === "unavailable") return;
 
     const newSeat = selectedSeat === seatId ? null : seatId;
@@ -185,7 +186,8 @@ export default function SeatSelector({
 
     // GUARDAR EN LOCAL STORAGE
     if (newSeat) {
-      saveLocalStorage(newSeat);
+      saveLocalStorage(newSeat, section);
+      
     } else {
       // limbiar si se deselecciona
       localStorage.removeItem("selected-seat");
@@ -435,7 +437,7 @@ export default function SeatSelector({
                     whileTap={
                       seat.status !== "unavailable" ? { scale: 0.95 } : {}
                     }
-                    onClick={() => handleSeatClick(seat.id, seat.status)}
+                    onClick={() => handleSeatClick(seat.id, seat.status, seat.section)}
                     className={`
                       w-10 h-10 rounded-md cursor-pointer flex items-center justify-center text-xs font-medium transition-all
                       ${

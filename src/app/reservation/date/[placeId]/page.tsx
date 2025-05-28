@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 import StepperUI from "@/components/stepper-ui";
 import DateSelector, { DateItem, DateSelectorProps } from "@/components/ui/date-selector";
 import { Place, PlaceAPI } from "@/app/api/place";
@@ -12,6 +13,7 @@ import { FlightApi } from "@/app/api/flight";
 import { Flight } from "@/types/flight";
 import { flightDuration, formatIsoToHHMM } from "@/utils/datetime";
 import { calcularPrecioVuelo } from "@/utils/pricing";
+import { calcularCargoExtra } from '../../../../utils/luggage';
 
 export default function DatePage() {
   const { placeId } = useParams();
@@ -25,10 +27,20 @@ export default function DatePage() {
   const [airlines, setAirlines] = useState<any[]>([]);
   const router = useRouter();
   
+  const [expandedFlight, setExpandedFlight] = useState<number | null>(null)
+  const [selectedClass, setSelectedClass] = useState<"economy" | "first">("economy");
+  
 
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
   const [selectedPrice, setSelectedPrice] = useState<number>(25000);
   const [selectedDuration, setSelectedDuration] = useState<number>(24);
+
+
+
+
+  const toggleExpanded = (flightId: number) => {
+    setExpandedFlight(expandedFlight === flightId ? null : flightId)
+  }
 
   // Efecto para obtener el lugar de destino
   useEffect(() => {
@@ -318,9 +330,72 @@ export default function DatePage() {
                     >
                       Reservar
                     </button>
+                  <button
+                    onClick={() => toggleExpanded(flight.flightId)}
+                    className="p-2 text-gray-400 hover:text-[#003B80] transition-colors"
+                  >
+                    {expandedFlight === flight.flightId ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  </button>
+
+                  
+                  </div>
+
+                  
+          {/* Expandable Class Options */}
+          <AnimatePresence>
+            {expandedFlight === flight.flightId && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="border-t border-gray-200 bg-gray-50"
+              >
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Asientos Normales */}
+                    <div className="bg-white rounded-lg border border-gray-200 p-4 hover:border-[#605DEC] transition-colors">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-800">Asientos Normales</h4>
+                          <p className="text-sm text-gray-600">Clase económica</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-[#605DEC]">{0}</p>
+                          <p className="text-xs text-gray-500">extra por persona</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Primera Clase */}
+                    <div className="bg-white rounded-lg border border-gray-200 p-4 hover:border-[#FFD700] transition-colors relative">
+                      <div className="flex flex-col justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-800">Primera Clase</h4>
+                          <p className="text-sm text-gray-600">Máximo confort</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-[#FFD700]">{process.env.NEXT_PUBLIC_PRECIO_PRIMERA_CLASE!}</p>
+                          <p className="text-xs text-gray-500">extra por persona</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+                  
+
+
+                </div>
+
+
+
+
+
+))}
             </div>
           </section>
         </div>

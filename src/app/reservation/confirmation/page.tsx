@@ -1,41 +1,43 @@
+"use client"
+
 import Link from "next/link"
-import { Check } from "lucide-react"
+import { Check, X } from 'lucide-react';
 import FlightSummary from "@/components/flight-summary"
 import PriceBreakdown from "@/components/price-breakdown"
 import HotelSuggestion from "@/components/hotel-suggestion"
+import { set } from 'react-hook-form';
+import { useEffect, useState } from "react"
+import { convertDate, DateItem, flightDuration, formatTo12Hour } from "@/utils/datetime"
+import { Flight } from "@/types/flight"
 
 export default function ConfirmationPage() {
+
+  const [flight, setFlight] = useState<Flight>()
+  const [departureDate, setDepartureDate] = useState<DateItem>()
+  const [price, setPrice] = useState<string>("")
+  const [selectedSeat, setSelectedSeat] = useState<string>("")
+  
+  useEffect(() => {
+    const storage = localStorage.getItem('flight');
+    setFlight(JSON.parse(storage? storage : '{}'));
+
+    const pricing = localStorage.getItem('price');
+    setPrice(pricing ? pricing : "$0");
+    setSelectedSeat(localStorage.getItem('selected-seat') || "N/A");
+
+
+
+    const dates = convertDate(flight?.departureTime || new Date().toISOString());
+    setDepartureDate(dates);
+  }, [])
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Header/Navigation */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-[#605DEC]">
-            Tripma
-          </Link>
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Vuelos
-            </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Ver mis vuelos
-            </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Inicio de sesión
-            </Link>
-            <Link
-              href="#"
-              className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors"
-            >
-              Registro
-            </Link>
-          </nav>
-        </div>
-      </header>
+
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+        <div className=" mx-auto">
           {/* Success Message */}
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8 flex items-start">
             <div className="bg-green-100 rounded-full p-1 mr-3 mt-0.5">
@@ -66,44 +68,41 @@ export default function ConfirmationPage() {
 
                 {/* Departing Flight */}
                 <div className="mb-6">
-                  <p className="text-gray-600 mb-2">Departing February 25th, 2021</p>
+                  <p className="text-gray-600 mb-2">Departing {`${departureDate?.month} ${departureDate?.date} ${departureDate?.year}`} </p>
                   <FlightSummary
-                    duration="16h 45m"
-                    airline="Hawaiian Airlines"
-                    departureTime="7:00AM"
-                    arrivalTime="4:15PM"
-                    stops="1 stop"
-                    layover="2h 45m in HNL"
-                    price="$624"
+                    logo={flight?.airline.logoUrl!}
+                    duration={flightDuration(flight?.departureTime || "", flight?.arrivalTime || "")}
+                    airline={flight?.airline.name || ""}
+                    departureTime={formatTo12Hour(flight?.departureTime || new Date().toISOString())}
+                    arrivalTime={formatTo12Hour(flight?.arrivalTime || new Date().toISOString())}
+                    price={price}
                   />
-                  <p className="text-gray-600 mt-2 text-sm">Seat 9F (economy, window), 1 checked bag</p>
+                  <p className="text-gray-600 mt-2 text-sm">Seat {selectedSeat} </p>
                 </div>
 
                 {/* Arriving Flight */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                   <p className="text-gray-600 mb-2">Arriving March 21st, 2021</p>
                   <FlightSummary
                     duration="16h 45m"
                     airline="Hawaiian Airlines"
                     departureTime="7:00AM"
                     arrivalTime="4:15PM"
-                    stops="1 stop"
-                    layover="2h 45m in HNL"
-                    price="$624"
+                    price={localStorage.getItem('price')!}
                   />
-                  <p className="text-gray-600 mt-2 text-sm">Seat 4F (business, window), 1 checked bag</p>
-                </div>
+                  <p className="text-gray-600 mt-2 text-sm">Seat {localStorage.getItem('selected-seat')}</p>
+                </div> */}
 
                 {/* Price Breakdown */}
                 <div className="mt-10">
-                  <h2 className="text-xl font-medium text-gray-800 mb-4">Price breakdown</h2>
+                  <h2 className="text-xl font-medium text-gray-800 mb-4">Desglose de precios</h2>
                   <PriceBreakdown />
                 </div>
               </div>
             </div>
 
             {/* Hotel Suggestions */}
-            <div className="lg:col-span-1">
+            {/* <div className="lg:col-span-1">
               <h2 className="text-xl font-medium text-gray-800 mb-6">¿Cuál será tu próxima aventura?</h2>
 
               <div className="space-y-6">
@@ -127,8 +126,8 @@ export default function ConfirmationPage() {
                   description="Modern hotel in the heart of Osaka"
                   price="$139"
                 />
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
           </div>
         </div>
       </main>

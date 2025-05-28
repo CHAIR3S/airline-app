@@ -32,6 +32,7 @@ interface LuggageItemProps {
     height: number;
     depth: number;
     weight: number;
+    extraAmount?: number; 
   };
 
   function calcularCargoExtra(maleta: Luggage): number {
@@ -51,7 +52,7 @@ interface LuggageItemProps {
 
     let extra = r.base;
 
-    const { width, height, depth, weight } = maleta;
+    const { width, height, depth, weight, extraAmount } = maleta;
 
     const sizeExceeded = width > r.maxW || height > r.maxH || depth > r.maxD;
 
