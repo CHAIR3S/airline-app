@@ -6,9 +6,23 @@ import HotDeal from "./HotDeal";
 import { useEffect, useState } from "react";
 import { Place, PlaceAPI } from "@/app/api/place";
 import PlaceCard from "@/components/place-card";
+import { useRouter } from "next/navigation";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 export default function Home() {
+
+  const [originId, setOriginId] = useState<number>(0);
+  const [destinationId, setDestinationId] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [passengers, setPassengers] = useState<number>(1);
   const [places, setPlaces] = useState<Place[]>([]);
+  const router = useRouter();
+
+
+
 
   useEffect(() => {
     PlaceAPI.getAll()
@@ -32,28 +46,6 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 ">
-        {/* Header/Navigation */}
-        {/* <header className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="text-2xl font-bold text-[#605DEC]">Tripma</div>
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Vuelos
-            </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Ver mis vuelos
-            </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Inicio de sesión
-            </Link>
-            <Link
-              href="#"
-              className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors"
-            >
-              Registro
-            </Link>
-          </nav>
-        </header> */}
-        {/* Hero Section */}
         <section className="relative py-16 md:pb-[25vh] pt-[17vh]">
           <div className="absolute inset-0 -z-10 bg-[url('/placeholdser.svg?height=800&width=1600')] bg-cover bg-center opacity-10"></div>
           <div className="container mx-auto px-4 text-center">
@@ -63,7 +55,7 @@ export default function Home() {
 
             {/* Search Form */}
             <div className="bg-white rounded-xl shadow-sm flex flex-col md:flex-row overflow-hidden max-w-4xl mx-auto">
-              <div className="flex items-center p-4 border-b md:border-b-0 md:border-r border-gray-200 flex-1">
+              <div className="flex items-center p-4 border-b md:border-b-0 md:border-r border-gray-200 basis-1/3">
                 <svg
                   width="24"
                   height="24"
@@ -108,13 +100,22 @@ export default function Home() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <input
-                  type="text"
-                  placeholder="From where?"
+                <select
                   className="outline-none w-full text-gray-600"
-                />
+                  value={originId ?? ""}
+                  onChange={(e) => setOriginId(Number(e.target.value))}
+                >
+                  <option value="">Origen</option>
+                  {places.map((place) => (
+                    <option key={place.placeId} value={place.placeId}>
+                      {place.name}, {place.city}
+                    </option>
+                  ))}
+                </select>
+
+
               </div>
-              <div className="flex items-center p-4 border-b md:border-b-0 md:border-r border-gray-200 flex-1">
+              <div className="flex items-center p-4 border-b md:border-b-0 md:border-r border-gray-200 basis-1/3">
                 <svg
                   width="24"
                   height="24"
@@ -159,11 +160,19 @@ export default function Home() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <input
-                  type="text"
-                  placeholder="Where to?"
+                <select
                   className="outline-none w-full text-gray-600"
-                />
+                  value={destinationId}
+                  onChange={(e) => setDestinationId(e.target.value)}
+                >
+                  <option value="">Destino</option>
+                  {places.map((place) => (
+                    <option key={place.placeId} value={place.placeId}>
+                      {place.name}, {place.city}
+                    </option>
+                  ))}
+                </select>
+
               </div>
               <div className="flex items-center p-4 border-b md:border-b-0 md:border-r border-gray-200">
                 <svg
@@ -238,11 +247,28 @@ export default function Home() {
                     strokeLinecap="round"
                   />
                 </svg>
-                <input
-                  type="text"
-                  placeholder="Depart - Return"
-                  className="outline-none w-full text-gray-600"
-                />
+                <div className="flex space-x-2">
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    selectsStart
+                    startDate={startDate}
+                    endDate={endDate}
+                    placeholderText="Fehca de ida"
+                    className="outline-none w-full text-gray-600"
+                  />
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={endDate}
+                    minDate={startDate || undefined}
+                    placeholderText="Fecha de vuelta"
+                    className="outline-none w-full text-gray-600"
+                  />
+                </div>
+
               </div>
               <div className="flex items-center p-4 border-b md:border-b-0 md:border-r border-gray-200">
                 <svg
@@ -269,14 +295,40 @@ export default function Home() {
                   />
                 </svg>
                 <input
-                  type="text"
-                  placeholder="1 adult"
+                  type="number"
+                  min={1}
+                  max={9}
+                  value={passengers}
+                  onChange={(e) => setPassengers(Number(e.target.value))}
                   className="outline-none w-full text-gray-600"
+                  placeholder="1 adult"
                 />
+
               </div>
-              <button className="bg-[#605DEC] text-white p-4 md:px-8 hover:bg-[#4F4ADB] transition-colors font-medium">
+              <button
+                className="bg-[#605DEC] text-white p-4 md:px-8 hover:bg-[#4F4ADB] transition-colors font-medium"
+                onClick={() => {
+                  if (!originId || !destinationId || !startDate || !endDate) {
+                    alert("Selecciona origen, destino y fechas.");
+                    return;
+                  }
+
+                  const query = new URLSearchParams({
+                    origin: originId.toString(),
+                    start: startDate.toISOString().split("T")[0],
+                    end: endDate.toISOString().split("T")[0],
+                    passengers: passengers.toString(),
+                  });
+
+                  router.push(`/reservation/date/${destinationId}?${query.toString()}`);
+
+                }}
+
+
+              >
                 Search
               </button>
+
             </div>
           </div>
         </section>
@@ -289,136 +341,11 @@ export default function Home() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="relative h-64">
-                <Image
-                  src="/placeholder.svg?height=400&width=600"
-                  alt="Shanghai"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-medium">
-                      The Bund, <span className="text-[#605DEC]">Shanghai</span>
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      China's most international city
-                    </p>
-                  </div>
-                  <span className="text-lg font-medium">$598</span>
-                </div>
-              </div>
-            </div> */}
 
             {places.map((place) => (
 
               <PlaceCard key={place.placeId} {...place} />
             ))}
-
-            {/* <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <div className="relative h-64">
-                <Image
-                  src="/placeholder.svg?height=400&width=600"
-                  alt="Kyoto"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-medium">
-                      Kōdaiji Temple,{" "}
-                      <span className="text-[#605DEC]">Kyoto</span>
-                    </h3>
-                    <p className="text-gray-500 text-sm">
-                      Step back in time in the Gion district
-                    </p>
-                  </div>
-                  <span className="text-lg font-medium">$633</span>
-                </div>
-              </div>
-            </div> */}
-          </div>
-        </section>
-        {/* Stays Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-                <div className="relative h-64">
-                  <Image
-                    src="/placeholder.svg?height=400&width=600"
-                    alt="Maldives"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-medium mb-1">
-                    Stay among the atolls in{" "}
-                    <span className="text-[#605DEC]">Maldives</span>
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    From the 2nd century AD, the islands were known as the
-                    'Money Isles' due to the abundance of cowry shells, a
-                    currency of the early ages.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-                <div className="relative h-64">
-                  <Image
-                    src="/placeholder.svg?height=400&width=600"
-                    alt="Morocco"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-medium mb-1">
-                    Experience the Ourika Valley in{" "}
-                    <span className="text-[#605DEC]">Morocco</span>
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    Morocco's Hispano-Moorish architecture blends influences
-                    from Berber culture, Spain, and contemporary artistic
-                    currents in the Middle East.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg overflow-hidden shadow-sm">
-                <div className="relative h-64">
-                  <Image
-                    src="/placeholder.svg?height=400&width=600"
-                    alt="Mongolia"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="font-medium mb-1">
-                    Live traditionally in{" "}
-                    <span className="text-[#605DEC]">Mongolia</span>
-                  </h3>
-                  <p className="text-gray-500 text-sm">
-                    Traditional Mongolian yurts consists of an angled
-                    latticework of wood or bamboo for walls, ribs, and a wheel.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-center mt-10">
-              <button className="bg-[#605DEC] text-white px-6 py-3 rounded-md hover:bg-[#4F4ADB] transition-colors">
-                Explore more stays
-              </button>
-            </div>
           </div>
         </section>
         {/* Footer */}
