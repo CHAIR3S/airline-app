@@ -39,6 +39,12 @@ export default function RootLayout({
             {/* <Image src={"/external/odisea-logo.png"} alt="odisea-logo" width={120} height={120} className="absolute top-[-2vh] " /> */}
           </div>
           <nav className="hidden md:flex items-center space-x-6">
+            <Link href="/dashboard/reports" className="text-gray-600 hover:text-[#605DEC] font-semibold text-outline-white">
+              Reportes
+            </Link>
+            <Link href="/dashboard" className="text-gray-600 hover:text-[#605DEC] font-semibold text-outline-white">
+              Dashboard
+            </Link>
             <Link href="/home" className="text-gray-600 hover:text-[#605DEC] font-semibold text-outline-white">
               Vuelos
             </Link>

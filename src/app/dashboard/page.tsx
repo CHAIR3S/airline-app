@@ -20,7 +20,7 @@ export type Filters = {
 
 
 function filterFlights(flights: Flight[], filters: Filters, search: string) {
-  console.log("🔍 Filtrando con: ", filters, search);
+  console.log("Filtrando con: ", filters, search);
   return flights.filter((flight) => {
     const matchesSearch = (''+flight.flightId).toLowerCase().includes(search.toLowerCase());
 
@@ -90,7 +90,9 @@ useEffect(() => {
 
         <div className="flex justify-between items-center mb-6">
           <FilterBar filters={filters} setFilters={setFilters} />
-          <button className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors">
+          <button
+          
+          className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors">
             Create flight
           </button>
         </div>

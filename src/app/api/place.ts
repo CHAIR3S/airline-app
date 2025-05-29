@@ -36,7 +36,7 @@ export class PlaceAPI {
     return res.json();
   }
 
-  static async create(data: CreatePlaceDto): Promise<Place> {
+  static async create(data:any): Promise<Place> {
     const res = await fetch(`${API_BASE}/place`, {
       method: 'POST',
       headers: {
@@ -51,6 +51,19 @@ export class PlaceAPI {
     }
 
     return res.json();
+  }
+
+  static async update(id: number, place: any): Promise<CreatePlaceDto> {
+    const res = await fetch(`${API_BASE}/place/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(place),
+    })
+
+    if (!res.ok) throw new Error("Error al actualizar el lugar")
+    return res.json()
   }
 
   
