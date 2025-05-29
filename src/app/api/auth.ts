@@ -41,12 +41,12 @@ export async function login(email: string, password: string) {
 export async function register(userData: {
   name: string
   email: string
-  password: string
+  passwordHash: string
   birthDate: string
   address: string
   role?: string
 }) {
-  const res = await fetch(`${API_BASE}/users`, {
+  const res = await fetch(`${API_BASE}/user`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),

@@ -8,6 +8,7 @@ import WorldMap from "@/components/ui/world-map";
 import UserDashboard from "@/components/ui/user-dashboard";
 import { FlightApi } from "../api/flight";
 import { Flight } from "@/types/flight";
+import { useRouter } from "next/navigation";
 
 
 
@@ -49,6 +50,7 @@ export default function SearchResultsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<Filters>({});
   const [name, setName] = useState('')
+  const router = useRouter();
 
 useEffect(() => {
   FlightApi.getAllFlightsActive()
@@ -91,9 +93,9 @@ useEffect(() => {
         <div className="flex justify-between items-center mb-6">
           <FilterBar filters={filters} setFilters={setFilters} />
           <button
-          
-          className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors">
-            Create flight
+          onClick={() => {router.push('/dashboard/flight')}}
+          className="cursor-pointer bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors">
+            Crear Vuelo
           </button>
         </div>
 

@@ -26,6 +26,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { register } from "@/app/api/auth";
+import { useRouter } from "next/navigation"; 
+import { UserRole } from "@/types/user";
 
 const formSchema = z.object({
   name: z.string().min(1, "Requerido"),
@@ -36,10 +39,8 @@ const formSchema = z.object({
     required_error: "Selecciona género",
   }),
   birthday: z.string().min(1, "Requerido"),
-  passport: z.string().min(1, "Requerido"),
-  profile_picture: z
-    .any()
-    .refine((files) => files?.length === 1, "Sube tu foto de perfil"),
+  address: z.string().min(1, "Requerido"),
+
   terms: z
     .boolean()
     .refine((v) => v === true, "Debes aceptar los términos y condiciones"),
@@ -49,6 +50,7 @@ type RegisterData = z.infer<typeof formSchema>;
 
 export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<RegisterData>({
     resolver: zodResolver(formSchema),
@@ -59,17 +61,36 @@ export default function RegisterForm() {
       phone: "",
       gender: "Masculino",
       birthday: "",
-      passport: "",
-      profile_picture: null,
+      address: "",
       terms: false,
     },
   });
 
-  async function onSubmit(values: RegisterData) {
-    setIsLoading(true);
-    // lógica de envío...
+async function onSubmit(values: RegisterData) {
+  setIsLoading(true);
+  try {
+    const payload = {
+      name: values.name,
+      email: values.email,
+      passwordHash: values.password,
+      birthDate: values.birthday,
+      address: values.address, 
+      role: UserRole.CLIENT
+    };
+
+    const res = await register(payload);
+
+    console.log("Usuario registrado:", res);
+    // Redirigir o mostrar mensaje
+    router.push('/auth/login')
+  } catch (err: any) {
+    console.error("Error registrando usuario:", err.message);
+    // alert(err.message || "Error desconocido");
+  } finally {
     setIsLoading(false);
   }
+}
+
 
   return (
     <Card className="w-full max-w-md shadow-lg">
@@ -167,15 +188,14 @@ export default function RegisterForm() {
               )}
             />
 
-            {/* Número de pasaporte */}
             <FormField
               control={form.control}
-              name="passport"
+              name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Número de Pasaporte</FormLabel>
+                  <FormLabel>Dirección</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej. ABC123456" {...field} />
+                    <Input placeholder="Ingresa tu dirección" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -211,7 +231,7 @@ export default function RegisterForm() {
             {/* Botón */}
             <Button
               type="submit"
-              className="w-full mt-2 btn-primary"
+              className="w-full mt-2 btn-primary cursor-pointer"
               disabled={isLoading}
             >
               {isLoading ? (
