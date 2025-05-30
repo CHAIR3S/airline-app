@@ -8,23 +8,10 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { date } from "zod"
 import { FlightApi } from "@/app/api/flight"
 import { set } from "react-hook-form"
+import { DateSelectorProps } from "@/types/others"
 
 
-export type DateItem = {
-  day: string;
-  date: string;
-  month: string;
-  year: string;
-  monthNumber: number;
-  isSelected?: boolean;
-};
 
-export type DateSelectorProps = {
-  data: DateItem[];
-  originId: number;
-  destinationId: number;
-  setFlights: any;
-};
 
 export default function DateSelector({data, originId, destinationId, setFlights}: DateSelectorProps ) {
   // Estado para el arrastre

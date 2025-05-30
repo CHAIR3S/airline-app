@@ -46,7 +46,7 @@ export default function RootLayout({
             <Link href="/home" className="text-gray-600 hover:text-[#605DEC] font-semibold text-outline-white">
               Vuelos
             </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC] font-semibold">
+            <Link href="/client/my-flights" className="text-gray-600 hover:text-[#605DEC] font-semibold">
               Ver mis vuelos
             </Link>
             <Link href="#" className="text-gray-600 hover:text-[#605DEC] font-semibold">

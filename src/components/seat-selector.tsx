@@ -159,7 +159,7 @@ export default function SeatSelector({
         const seatLetter = letters[j];
         row.push({
           id: `${i + startRow}${seatLetter}`,
-          status: Math.random() < 0.3 ? "unavailable" : "available",
+          status: "available",
           section,
         });
 

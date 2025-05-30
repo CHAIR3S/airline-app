@@ -5,16 +5,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
 import StepperUI from "@/components/stepper-ui";
-import DateSelector, { DateItem, DateSelectorProps } from "@/components/ui/date-selector";
+
 import { Place, PlaceAPI } from "@/app/api/place";
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { FlightApi } from "@/app/api/flight";
 import { Flight } from "@/types/flight";
-import { flightDuration, formatIsoToHHMM } from "@/utils/datetime";
+import { DateItem, flightDuration, formatIsoToHHMM } from "@/utils/datetime";
 import { calcularPrecioVuelo } from "@/utils/pricing";
 import { calcularCargoExtra } from '../../../../utils/luggage';
 import { useSearchParams } from "next/navigation";
+import { DateSelectorProps } from "@/types/others";
+import DateSelector from "@/components/ui/date-selector";
 
 
 export default function DatePage() {

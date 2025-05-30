@@ -3,15 +3,7 @@ import { convertDate, flightDuration, formatTo12Hour } from "@/utils/datetime";
 import { distance } from "@/utils/pricing";
 import { Weather } from "@/types/flight";
 
-export type FlightData = {
-  flightId: number | undefined;
-  origin: Place | undefined;
-  destination: Place | undefined;
-  departureDate: string | undefined;
-  arrivalDate: string | undefined;
-  airline: Airline | undefined;
-  weather: string | undefined;
-};
+
 
 export function WeatherIcon({ type }: { type: Weather }) {
   switch (type) {
@@ -145,7 +137,7 @@ export default function FlightInfo({
   arrivalDate,
   airline,
   weather,
-}: FlightData) {
+}: any) {
   console.log(
     "FlightInfo",
     flightId,

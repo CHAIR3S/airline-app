@@ -9,15 +9,9 @@ import UserDashboard from "@/components/ui/user-dashboard";
 import { FlightApi } from "../api/flight";
 import { Flight } from "@/types/flight";
 import { useRouter } from "next/navigation";
+import { Filters } from "@/types/others";
 
 
-
-export type Filters = {
-  airlineName?: string;
-  originName?: string;
-  destinationName?: string;
-  status?: string;
-};
 
 
 function filterFlights(flights: Flight[], filters: Filters, search: string) {

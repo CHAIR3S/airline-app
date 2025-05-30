@@ -6,37 +6,15 @@ import {
   LineChart, Line, AreaChart, Area, CartesianGrid
 } from "recharts"
 import { Calendar, TrendingUp, Users, Plane, DollarSign, MapPin } from "lucide-react"
+import { AverageBaggage, OccupancyRate, TopDestination } from "@/types/others"
+
 
 type Period = 'week' | 'month' | 'year'
 
-export type TopDestination = {
-  city: string;
-  total_reservations: number;
-};
 
-export type OccupancyRate = {
-  destination: string;
-  occupancyRate: number | string;
-};
 
-type AverageBaggage = {
-  flight_id: number
-  avg_weight: number
-}
 
-export type BaggageData = {
-  flight_id: number;
-  avg_weight: number | string;
-};
 
-export type SalesSummary = {
-  reservations: number;
-  clients: number;
-  flights: number;
-  revenue: number;
-  avgTicketPrice: number;
-  occupancyRate: number;
-};
 
 const COLORS = ["#605DEC", "#34D399", "#F59E0B", "#EF4444", "#8B5CF6"]
 

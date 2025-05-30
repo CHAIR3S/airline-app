@@ -9,20 +9,10 @@ import { set } from 'react-hook-form';
 import { useEffect, useState } from "react"
 import { convertDate, DateItem, flightDuration, formatTo12Hour } from "@/utils/datetime"
 import { Flight } from "@/types/flight"
-
- export enum BaggageStatus {
-    CHECKED_IN = 'CHECKED_IN',
-    IN_TRANSIT = 'IN_TRANSIT',
-    DELIVERED = 'DELIVERED',
-    LOST = 'LOST',
-  }
+import { BaggageStatus, ReservationStatus } from "@/app/constants/BaggageStatus";
 
 
-  export enum ReservationStatus {
-    RESERVED = 'RESERVED',
-    CANCELLED = 'CANCELLED',
-    COMPLETED = 'COMPLETED',
-  }
+
   
 
 export default function ConfirmationPage() {
