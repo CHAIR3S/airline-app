@@ -9,7 +9,7 @@ export default function CreateFlightPage() {
       <main className="flex-1 container mx-auto px-4 py-20">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-[#605DEC]">Crear Nuevo Vuelo</h1>
-          <Link href="/vuelos" className="flex items-center text-[#605DEC] hover:text-[#4F4ADB] transition-colors">
+          <Link href="/dashboard" className="flex items-center text-[#605DEC] hover:text-[#4F4ADB] transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
               <path
                 fillRule="evenodd"

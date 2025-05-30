@@ -97,6 +97,17 @@ useEffect(() => {
           className="cursor-pointer bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors">
             Crear Vuelo
           </button>
+          <button
+          onClick={() => {router.push('/dashboard/place')}}
+          className="cursor-pointer bg-[#605DEC] text-white px-4 py-2 mx-1 rounded-md hover:bg-[#4F4ADB] transition-colors">
+            Crear Lugar
+          </button>
+          
+          <button
+          onClick={() => {router.push('/dashboard/employee')}}
+          className="cursor-pointer bg-[#605DEC] text-white px-4 py-2 mx-1 rounded-md hover:bg-[#4F4ADB] transition-colors">
+            Empleados
+          </button>
         </div>
 
         <h1 className="text-xl font-medium text-gray-800 mb-4">Vuelos registrados</h1>

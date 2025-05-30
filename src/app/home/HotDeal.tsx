@@ -3,6 +3,9 @@
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { Flame } from "lucide-react"
+import { PlaceAPI } from "../api/place"
+import { Place } from "@/types/flight"
+import { useRouter } from "next/navigation"
 
 type DiscountedPlace = {
   placeId: number
@@ -14,21 +17,19 @@ type DiscountedPlace = {
 }
 
 export default function HotDeal() {
-  const [places, setPlaces] = useState<DiscountedPlace[]>([])
+  const [places, setPlaces] = useState<Place[]>([])
+  const router = useRouter()
 
   useEffect(() => {
-  fetch("http://localhost:4000/place/offers")
-    .then(res => res.json())
-    .then(data => {
-      console.log("Datos recibidos:", data);
-      setPlaces(data);
-    })
-    .catch(err => console.error("Error al cargar ofertas:", err));
-}, []);
+    PlaceAPI.getWithDiscount()
+      .then((data: any) => {setPlaces(data)})
+
+    
+  }, []);
 
 
   return (
-    <section className="py-16 bg-gradient-to-r from-[var(--pink-200)] to-orange-200">
+    <section className="py-16 bg-gradient-to-r from-[var(--pink-200)] to-orange-200 cursor-pointer">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-center mb-10">
           <Flame className="text-red-500 mr-2" size={24} />
@@ -39,6 +40,10 @@ export default function HotDeal() {
           {Array.isArray(places) && places.map((place) => (
             
             <div
+              onClick={() => {
+                router.push(`/reservation/date/${place.placeId}`)
+              }}
+
               key={place.placeId}
               className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow transform hover:-translate-y-1 duration-300"
             >
@@ -81,11 +86,11 @@ export default function HotDeal() {
           ))}
         </div>
 
-        <div className="flex justify-center mt-10">
+        {/* <div className="flex justify-center mt-10">
           <button className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-md hover:from-red-600 hover:to-orange-600 transition-colors shadow-md">
             Ver todas las ofertas hot
           </button>
-        </div>
+        </div> */}
       </div>
     </section>
   )

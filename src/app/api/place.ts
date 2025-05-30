@@ -79,4 +79,12 @@ export class PlaceAPI {
     return res.json();
   }
 
+  static async getWithDiscount(): Promise<Place[]> {
+    const res = await fetch(`${API_BASE}/place/with-discount`);
+    if (!res.ok) throw new Error('Error al obtener los lugares con descuento');
+    return res.json();
+  }
+
+  
+
 }

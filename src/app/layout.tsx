@@ -28,9 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body
       >
-        
-        
-
+      
         {/* Header/Navigation */}
         <header className="w-[90vw]  mx-auto  py-4 flex justify-between items-center z-20   ">
           <div className="text-4xl font-bold text-secondary ">

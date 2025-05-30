@@ -1,91 +1,59 @@
+'use client'
+
 import Link from "next/link"
 import FlightCard from "@/components/flight-card"
-
+import { useEffect, useState } from "react"
+import { TicketAPI } from "@/app/api/ticket";
+import { Ticket } from "@/types/ticket";
+import { convertDate, flightDuration, formatTo12Hour } from "@/utils/datetime";
+import { Flight } from '../../../types/flight';
 export default function MyFlightsPage() {
+
+  const [myFlyghts, setMyFlights] = useState<Flight[]>([]);
+
+  useEffect(() => {
+    TicketAPI.getByUserId(2).then((response: any) => {
+
+      console.log(response)
+
+      setMyFlights(response)
+
+    })
+
+  }, [])
+
+
+
   return (
+    
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Header/Navigation */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-[#605DEC]">
-            Tripma
-          </Link>
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Vuelos
-            </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC] font-medium">
-              Ver mis vuelos
-            </Link>
-            <Link href="#" className="text-gray-600 hover:text-[#605DEC]">
-              Inicio de sesión
-            </Link>
-            <Link
-              href="#"
-              className="bg-[#605DEC] text-white px-4 py-2 rounded-md hover:bg-[#4F4ADB] transition-colors"
-            >
-              Registro
-            </Link>
-          </nav>
-        </div>
-      </header>
+
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Mis vuelos</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Flight Card 1 */}
-          <FlightCard
-            image="/placeholder.svg?height=300&width=600"
-            departureDate="February 25th, 2021"
-            arrivalDate="March 21st, 2021"
-            duration="16h 45m"
-            airline="Hawaiian Airlines"
-            departureTime="7:00AM"
-            arrivalTime="4:15PM"
-            stops="1 stop"
-            layover="2h 45m in HNL"
-          />
 
-          {/* Flight Card 2 */}
-          <FlightCard
-            image="/placeholder.svg?height=300&width=600"
-            departureDate="February 25th, 2021"
-            arrivalDate="March 21st, 2021"
-            duration="16h 45m"
-            airline="Hawaiian Airlines"
-            departureTime="7:00AM"
-            arrivalTime="4:15PM"
-            stops="1 stop"
-            layover="2h 45m in HNL"
-          />
 
-          {/* Flight Card 3 */}
-          <FlightCard
-            image="/placeholder.svg?height=300&width=600"
-            departureDate="February 25th, 2021"
-            arrivalDate="March 21st, 2021"
-            duration="16h 45m"
-            airline="Hawaiian Airlines"
-            departureTime="7:00AM"
-            arrivalTime="4:15PM"
-            stops="1 stop"
-            layover="2h 45m in HNL"
-          />
+          {myFlyghts.map((ticket: any) => (
+            <FlightCard
+              key={ticket.ticketId}
+              paymentId={ticket.reservation.payment.paymentId}
+              flightId={ticket.reservation.flight.flightId}
+              destinationName={ticket.reservation.flight.destination.name}
+              image={ticket.reservation.flight.destination.photo ? Buffer.from(ticket.reservation.flight.destination.photo).toString('base64') : ''}
+              departureDate={convertDate(ticket.reservation.flight.departureTime || '2025-05-30T14:30:00.000Z')}
+              arrivalDate={convertDate(ticket.reservation.flight.arrivalTime || '2025-05-30T14:30:00.000Z')}
+              duration={flightDuration(ticket.reservation.flight.departureTime, ticket.reservation.flight.arrivalTime)}
+              airline={ticket.reservation.flight.airline?.name}
+              departureTime={formatTo12Hour(ticket.reservation.flight.departureTime)}
+              arrivalTime={formatTo12Hour(ticket.reservation.flight.arrivalTime)}
+              airlineLogo={ticket.reservation.flight.airline?.logoUrl}
+            />
+          ))}
 
-          {/* Flight Card 4 */}
-          <FlightCard
-            image="/placeholder.svg?height=300&width=600"
-            departureDate="February 25th, 2021"
-            arrivalDate="March 21st, 2021"
-            duration="16h 45m"
-            airline="Hawaiian Airlines"
-            departureTime="7:00AM"
-            arrivalTime="4:15PM"
-            stops="1 stop"
-            layover="2h 45m in HNL"
-          />
+
         </div>
       </main>
 
@@ -198,5 +166,6 @@ export default function MyFlightsPage() {
         </div>
       </footer>
     </div>
+    
   )
 }
